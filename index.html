@@ -9,7 +9,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 
     <style>
-        /* 1. VARIÁVEIS DE CORES */
         :root {
             --verde-primario: #2ecc71;
             --verde-escuro: #27ae60;
@@ -20,23 +19,22 @@
             --cinza-escuro: #111;
         }
 
-        /* 2. CONFIGURAÇÕES GERAIS */
         * { box-sizing: border-box; font-family: 'Poppins', sans-serif; }
         body { background: var(--bg-leve); margin: 0; color: var(--texto); padding-bottom: 100px; }
 
-        /* 3. CABEÇALHO */
+        /* CABEÇALHO */
         header { 
             background: linear-gradient(135deg, var(--verde-escuro), var(--verde-primario));
             color: white; padding: 40px 20px; text-align: center;
             border-radius: 0 0 30px 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
-        .badge-status { padding: 5px 15px; border-radius: 20px; font-size: 12px; font-weight: bold; }
+        .badge-status { padding: 5px 15px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-bottom: 10px; display: inline-block; }
         .status-aberto { background: #27ae60; border: 1px solid white; }
         .status-fechado { background: var(--vermelho); border: 1px solid white; }
 
         .container { max-width: 1000px; margin: auto; padding: 0 15px; }
 
-        /* 4. BUSCA E CATEGORIAS */
+        /* BUSCA E FILTROS */
         .search-container { position: relative; margin-top: -25px; z-index: 10; }
         .search-box { 
             width: 100%; padding: 18px 25px; border-radius: 50px; border: none;
@@ -46,7 +44,7 @@
         .cat-btn { background: white; border: none; padding: 10px 20px; border-radius: 15px; cursor: pointer; font-weight: 600; white-space: nowrap; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .cat-btn.active { background: var(--verde-escuro); color: white; }
 
-        /* 5. CARDS DE PRODUTOS */
+        /* CARDS */
         .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
         @media (min-width: 768px) { .grid { grid-template-columns: repeat(4, 1fr); } }
 
@@ -54,13 +52,12 @@
         .card img { width: 100%; height: 140px; object-fit: cover; }
         .card-body { padding: 12px; flex-grow: 1; text-align: center; }
         .price { color: var(--verde-escuro); font-weight: 700; font-size: 18px; margin: 5px 0; }
-        .label-peso { font-size: 10px; color: var(--laranja); font-weight: bold; display: block; margin-top: -5px; margin-bottom: 5px; }
+        .label-peso { font-size: 10px; color: var(--laranja); font-weight: bold; display: block; margin-bottom: 5px; }
         
-        /* Controles de Quantidade */
         .qty-controls { display: flex; align-items: center; justify-content: center; gap: 15px; margin-top: 10px; background: #f1f1f1; border-radius: 10px; padding: 5px; }
         .qty-btn { background: white; border: none; width: 30px; height: 30px; border-radius: 8px; cursor: pointer; font-weight: bold; }
 
-        /* 6. CARRINHO FLUTUANTE */
+        /* CARRINHO BARRA */
         .cart-bar {
             position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
             width: 90%; max-width: 500px; background: var(--cinza-escuro); color: white;
@@ -68,13 +65,13 @@
             justify-content: space-between; align-items: center; cursor: pointer; z-index: 999;
         }
 
-        /* 7. MODAL DE CHECKOUT */
+        /* MODAL CHECKOUT */
         .checkout-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 1000; display: none; flex-direction: column; }
         .checkout-modal.active { display: flex; }
         .modal-header { padding: 20px; border-bottom: 1px solid #eee; display: flex; align-items: center; justify-content: space-between; }
         .modal-body { padding: 20px; overflow-y: auto; flex-grow: 1; }
 
-        .aviso-peso { background: #fff3cd; color: #856404; padding: 10px; border-radius: 10px; font-size: 13px; margin-bottom: 15px; border: 1px solid #ffeeba; }
+        .aviso-peso { background: #fff3cd; color: #856404; padding: 12px; border-radius: 10px; font-size: 13px; margin-bottom: 15px; border: 1px solid #ffeeba; display: none; align-items: center; gap: 10px; }
 
         .form-group { margin-top: 20px; background: #f9f9f9; padding: 15px; border-radius: 15px; }
         input, select { width: 100%; padding: 15px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 12px; font-size: 16px; }
@@ -85,9 +82,9 @@
 
 <header>
     <div class="header-content">
-        <div id="status-loja" class="badge-status">Verificando...</div>
-        <h1 style="margin: 10px 0 0;">Hortifruti Vitória</h1>
-        <p style="margin: 0; opacity: 0.9;"><i class="fas fa-map-marker-alt"></i> Vieiralves, Manaus</p>
+        <div id="status-loja" class="badge-status">Verificando...</div><br>
+        <h1 style="margin: 0;">Hortifruti Vitória</h1>
+        <p style="margin: 5px 0 0; opacity: 0.9;"><i class="fas fa-map-marker-alt"></i> Vieiralves, Manaus</p>
     </div>
 </header>
 
@@ -104,7 +101,7 @@
         <button class="cat-btn" onclick="filtrarCat('Peixes', this)">🐟 Peixes</button>
     </div>
 
-    <div class="grid" id="lista-produtos"></div>
+    <div id="lista-produtos" class="grid"></div>
 </div>
 
 <div class="cart-bar" id="cart-bar" onclick="toggleModal(true)">
@@ -114,13 +111,14 @@
 
 <div class="checkout-modal" id="checkout-modal">
     <div class="modal-header">
-        <button onclick="toggleModal(false)" style="border:none; background:none; font-size: 20px;"><i class="fas fa-arrow-left"></i> Voltar</button>
+        <button onclick="toggleModal(false)" style="border:none; background:none; font-size: 18px; cursor:pointer"><i class="fas fa-arrow-left"></i> Voltar</button>
         <h2 style="margin:0; font-size: 18px;">Seu Carrinho</h2>
         <div></div>
     </div>
     <div class="modal-body">
-        <div class="aviso-peso">
-            <i class="fas fa-balance-scale"></i> <strong>Atenção:</strong> Itens marcados com * estão sujeitos a pesagem final e pequena variação no valor.
+        <div id="aviso-pesagem" class="aviso-peso">
+            <i class="fas fa-balance-scale"></i>
+            <span><strong>Atenção:</strong> Itens com * estão sujeitos a pesagem e pequena variação no valor.</span>
         </div>
 
         <div id="itens-carrinho"></div>
@@ -131,13 +129,13 @@
                 <option value="">Selecione seu Bairro</option>
                 <option value="0">Vieiralves (Frete Grátis)</option>
                 <option value="10">Outro bairro próximo (R$ 10,00)</option>
-                <option value="Outro">Outro bairro (Verificar com a loja)</option>
+                <option value="Outro">Outro bairro (A combinar)</option>
             </select>
             <input type="text" id="endereco-cliente" placeholder="Rua, número e apto">
             <select id="pagamento">
                 <option value="">Forma de Pagamento</option>
                 <option value="Pix">Pix</option>
-                <option value="Cartão de Crédito">Cartão de Crédito</option>
+                <option value="Cartão">Cartão</option>
                 <option value="Dinheiro">Dinheiro</option>
             </select>
 
@@ -155,19 +153,18 @@
     let categoriaAtiva = "Todos";
     let lojaAberta = false;
 
-    // VERIFICAÇÃO DE HORÁRIO MANAUS
     function verificarHorario() {
         const agora = new Date();
         const horaManaus = agora.getUTCHours() - 4;
         const horaReal = horaManaus < 0 ? horaManaus + 24 : horaManaus;
-        const statusElemento = document.getElementById('status-loja');
+        const statusEl = document.getElementById('status-loja');
         if (horaReal >= 7 && horaReal < 22) {
-            statusElemento.innerText = "● LOJA ABERTA (07h às 22h)";
-            statusElemento.className = "badge-status status-aberto";
+            statusEl.innerText = "● LOJA ABERTA (07h às 22h)";
+            statusEl.className = "badge-status status-aberto";
             lojaAberta = true;
         } else {
-            statusElemento.innerText = "● LOJA FECHADA (Abre às 07h)";
-            statusElemento.className = "badge-status status-fechado";
+            statusEl.innerText = "● LOJA FECHADA (Abre às 07h)";
+            statusEl.className = "badge-status status-fechado";
             lojaAberta = false;
         }
     }
@@ -187,12 +184,12 @@
                         nome: col[2].trim(), 
                         preco: parseFloat(col[3]), 
                         img: col[4].trim(),
-                        pesavel: col[5] ? col[5].trim().toLowerCase() === 'sim' : false // NOVA COLUNA
+                        pesavel: col[5] ? col[5].trim().toLowerCase() === 'sim' : false 
                     };
                 }
             }).filter(p => p);
             render();
-        } catch (e) { console.error("Erro ao carregar dados"); }
+        } catch (e) { console.error("Erro na planilha"); }
     }
 
     function render(filtro = "") {
@@ -245,12 +242,20 @@
 
     function renderItensCheckout() {
         const div = document.getElementById('itens-carrinho');
-        div.innerHTML = Object.values(carrinho).map(p => `
-            <div style="display:flex; justify-content:space-between; margin-bottom:10px; border-bottom:1px solid #eee; padding-bottom:5px;">
-                <span>${p.pesavel ? '*' : ''}${p.qtd}x ${p.nome}</span>
-                <span>R$ ${(p.preco * p.qtd).toFixed(2)}</span>
-            </div>
-        `).join('');
+        const aviso = document.getElementById('aviso-pesagem');
+        let temPesavel = false;
+
+        div.innerHTML = Object.values(carrinho).map(p => {
+            if (p.pesavel) temPesavel = true;
+            return `
+                <div style="display:flex; justify-content:space-between; margin-bottom:10px; border-bottom:1px solid #eee; padding-bottom:5px;">
+                    <span>${p.pesavel ? '*' : ''}${p.qtd}x ${p.nome}</span>
+                    <span>R$ ${(p.preco * p.qtd).toFixed(2).replace('.',',')}</span>
+                </div>
+            `;
+        }).join('') || "Carrinho vazio.";
+        
+        aviso.style.display = temPesavel ? 'flex' : 'none';
         atualizarTotal();
     }
 
@@ -259,7 +264,7 @@
         const taxa = document.getElementById('bairro-entrega').value;
         const resumo = document.getElementById('resumo-financeiro');
         if (taxa === "Outro") {
-            resumo.innerHTML = `Subtotal: R$ ${subtotal.toFixed(2)}<br><small>Taxa: A combinar</small>`;
+            resumo.innerHTML = `Total: R$ ${subtotal.toFixed(2).replace('.',',')} + Taxa a combinar`;
         } else if (taxa !== "") {
             const totalFinal = subtotal + parseFloat(taxa);
             resumo.innerHTML = `TOTAL: R$ ${totalFinal.toFixed(2).replace('.',',')}`;
@@ -267,21 +272,17 @@
     }
 
     function enviarWhatsApp() {
-        if (!lojaAberta) return alert("A loja está fechada no momento!");
+        if (!lojaAberta) return alert("A loja está fechada!");
         const nome = document.getElementById('nome-cliente').value;
         const bairro = document.getElementById('bairro-entrega').options[document.getElementById('bairro-entrega').selectedIndex].text;
         const endereco = document.getElementById('endereco-cliente').value;
         const pgto = document.getElementById('pagamento').value;
         const taxa = document.getElementById('bairro-entrega').value;
 
-        if(!nome || !pgto || taxa === "") return alert("Preencha todos os campos!");
+        if(!nome || !pgto || taxa === "") return alert("Preencha os dados de entrega!");
 
         let msg = `*PEDIDO - HORTIFRUTI VITÓRIA*\n\n`;
-        msg += `👤 *Cliente:* ${nome}\n`;
-        msg += `📍 *Bairro:* ${bairro}\n`;
-        msg += `🏠 *Endereço:* ${endereco}\n`;
-        msg += `💳 *Pagamento:* ${pgto}\n\n`;
-        msg += `*PRODUTOS:*\n`;
+        msg += `👤 *Cliente:* ${nome}\n📍 *Bairro:* ${bairro}\n🏠 *End:* ${endereco}\n💳 *Pgto:* ${pgto}\n\n*PRODUTOS:*\n`;
         
         let temPesavel = false;
         Object.values(carrinho).forEach(p => {
@@ -290,13 +291,10 @@
         });
 
         const subtotal = Object.values(carrinho).reduce((acc, p) => acc + (p.preco * p.qtd), 0);
-        const totalTxt = taxa === "Outro" ? `${subtotal.toFixed(2)} + Taxa a combinar` : (subtotal + parseFloat(taxa)).toFixed(2);
-        
+        const totalTxt = taxa === "Outro" ? `${subtotal.toFixed(2).replace('.',',')} + Taxa` : (subtotal + parseFloat(taxa)).toFixed(2).replace('.',',');
         msg += `\n*TOTAL ESTIMADO: R$ ${totalTxt}*`;
         
-        if (temPesavel) {
-            msg += `\n\n⚠️ *(*) Itens sujeitos a pesagem final. O valor exato será confirmado após a separação.*`;
-        }
+        if (temPesavel) msg += `\n\n⚠️ *(*) Itens sujeitos a pesagem final.*`;
 
         window.open(`https://wa.me/5592994498445?text=${encodeURIComponent(msg)}`, '_blank');
     }
