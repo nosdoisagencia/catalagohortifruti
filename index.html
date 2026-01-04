@@ -3,170 +3,315 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hortifruti Vitória - Pedido Online</title>
+    <title>Hortifruti Vitória | O Melhor de Manaus</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
-            --verde: #27ae60;
-            --verde-dark: #1e8449;
-            --branco: #ffffff;
-            --cinza: #f4f7f6;
+            --verde-primario: #2ecc71;
+            --verde-escuro: #27ae60;
             --laranja: #f39c12;
+            --bg-leve: #f8f9fa;
+            --texto: #2d3436;
+            --vermelho: #e74c3c;
         }
 
-        body { font-family: 'Segoe UI', sans-serif; background: var(--cinza); margin: 0; padding-bottom: 120px; }
-        
-        header { background: var(--verde); color: white; padding: 20px; text-align: center; }
-        .container { max-width: 800px; margin: auto; padding: 15px; }
+        * { box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background: var(--bg-leve); margin: 0; color: var(--texto); padding-bottom: 100px; }
 
-        /* Botão Grupo de Ofertas */
-        .btn-grupo { 
-            display: block; background: var(--laranja); color: white; text-align: center; 
-            padding: 12px; border-radius: 8px; text-decoration: none; font-weight: bold;
-            margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        /* TOPO PROFISSIONAL */
+        header { 
+            background: linear-gradient(135deg, var(--verde-escuro), var(--verde-primario));
+            color: white; padding: 40px 20px; text-align: center;
+            border-radius: 0 0 30px 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .header-content h1 { margin: 0; font-size: 28px; letter-spacing: -1px; }
+        .header-content p { margin: 5px 0 20px; opacity: 0.9; font-size: 14px; }
+        .badge-status { background: rgba(255,255,255,0.2); padding: 5px 15px; border-radius: 20px; font-size: 12px; }
+
+        .container { max-width: 1000px; margin: auto; padding: 0 15px; }
+
+        /* BUSCA E CATEGORIAS */
+        .search-container { position: relative; margin-top: -25px; z-index: 10; }
+        .search-box { 
+            width: 100%; padding: 18px 25px; border-radius: 50px; border: none;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1); font-size: 16px; outline: none;
         }
 
-        /* Busca e Filtros */
-        .search-box { width: 100%; padding: 12px; border-radius: 25px; border: 1px solid #ddd; margin-bottom: 15px; outline: none; box-sizing: border-box; }
-        .categories { display: flex; gap: 10px; overflow-x: auto; margin-bottom: 20px; padding-bottom: 5px; }
-        .cat-btn { background: white; border: 1px solid var(--verde); padding: 8px 15px; border-radius: 20px; cursor: pointer; white-space: nowrap; font-weight: bold; color: var(--verde); }
-        .cat-btn.active { background: var(--verde); color: white; }
+        .categories { 
+            display: flex; gap: 10px; overflow-x: auto; padding: 20px 0;
+            scrollbar-width: none; -ms-overflow-style: none;
+        }
+        .categories::-webkit-scrollbar { display: none; }
+        .cat-btn { 
+            background: white; border: none; padding: 10px 20px; border-radius: 15px;
+            cursor: pointer; font-weight: 600; color: #666; transition: 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05); white-space: nowrap;
+        }
+        .cat-btn.active { background: var(--verde-escuro); color: white; }
 
-        /* Produtos */
+        /* GRID DE PRODUTOS */
         .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
-        .card { background: white; padding: 15px; border-radius: 12px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .card .emoji { font-size: 40px; display: block; margin-bottom: 10px; }
-        .price { color: var(--verde-dark); font-weight: bold; display: block; margin: 10px 0; }
-        .btn-add { background: var(--verde); color: white; border: none; padding: 8px; width: 100%; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        @media (min-width: 768px) { .grid { grid-template-columns: repeat(4, 1fr); } }
 
-        /* Carrinho Flutuante */
-        .cart-footer { 
-            position: fixed; bottom: 0; left: 0; right: 0; 
-            background: var(--verde-dark); color: white; padding: 15px; 
-            display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.2); cursor: pointer; z-index: 100;
+        .card { 
+            background: white; border-radius: 18px; overflow: hidden; 
+            transition: transform 0.3s; position: relative;
+            display: flex; flex-direction: column; box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        .card:active { transform: scale(0.95); }
+        .card img { width: 100%; height: 140px; object-fit: cover; }
+        
+        .card-body { padding: 12px; flex-grow: 1; display: flex; flex-direction: column; }
+        .card-body h3 { margin: 0; font-size: 14px; color: #333; height: 40px; overflow: hidden; }
+        .price { color: var(--verde-escuro); font-weight: 700; font-size: 18px; margin: 8px 0; }
+        
+        .btn-add { 
+            background: var(--verde-primario); color: white; border: none;
+            padding: 10px; border-radius: 10px; font-weight: bold; cursor: pointer;
+            width: 100%; transition: 0.3s;
         }
 
-        /* Rodapé Informativo */
-        footer { background: #333; color: white; padding: 20px; text-align: center; font-size: 14px; margin-top: 40px; }
-        footer a { color: var(--verde); text-decoration: none; font-weight: bold; }
-        .contato-info { margin-top: 10px; line-height: 1.6; }
+        /* CARRINHO FLUTUANTE */
+        .cart-bar {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            width: 90%; max-width: 500px; background: #111; color: white;
+            padding: 15px 25px; border-radius: 25px; display: flex;
+            justify-content: space-between; align-items: center; cursor: pointer;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 999;
+        }
+
+        /* TELA DE CHECKOUT */
+        .checkout-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: white; z-index: 1000; display: none; flex-direction: column;
+        }
+        .checkout-modal.active { display: flex; }
+        .modal-header { padding: 20px; border-bottom: 1px solid #eee; display: flex; align-items: center; justify-content: space-between; }
+        .modal-body { padding: 20px; overflow-y: auto; flex-grow: 1; }
+
+        .cart-item {
+            display: flex; align-items: center; gap: 15px; margin-bottom: 15px;
+            padding-bottom: 15px; border-bottom: 1px solid #f9f9f9;
+        }
+        .cart-item img { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; }
+        .cart-item-info { flex-grow: 1; }
+        .cart-item-info h4 { margin: 0; font-size: 14px; }
+        .btn-del { color: var(--vermelho); border: none; background: none; font-size: 18px; cursor: pointer; }
+
+        .form-group { margin-top: 20px; }
+        input, select { width: 100%; padding: 15px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 12px; font-size: 16px; }
+        .btn-finish { background: var(--verde-escuro); color: white; border: none; width: 100%; padding: 18px; border-radius: 15px; font-weight: bold; font-size: 16px; cursor: pointer; }
+
     </style>
 </head>
 <body>
 
 <header>
-    <h1>Hortifruti Vitória</h1>
-    <p>Qualidade e Frescor no Vieiralves</p>
+    <div class="header-content">
+        <span class="badge-status"><i class="fas fa-clock"></i> Aberto Agora</span>
+        <h1>Hortifruti Vitória</h1>
+        <p><i class="fas fa-map-marker-alt"></i> Vieiralves, Manaus</p>
+        <a href="SEU_LINK_AQUI" style="color:white; text-decoration:none; background: var(--laranja); padding: 8px 15px; border-radius: 10px; font-weight: bold; font-size: 12px;">
+            <i class="fab fa-whatsapp"></i> GRUPO DE OFERTAS
+        </a>
+    </div>
 </header>
 
 <div class="container">
-    <a href="LINK_DO_SEU_GRUPO_AQUI" class="btn-grupo" target="_blank">
-        🔥 ENTRAR NO GRUPO DE OFERTAS EXCLUSIVAS
-    </a>
+    <div class="search-container">
+        <input type="text" id="busca" class="search-box" placeholder="O que você procura hoje?" onkeyup="filtrar()">
+    </div>
 
-    <input type="text" id="busca" class="search-box" placeholder="O que você procura?" onkeyup="filtrar()">
-    
     <div class="categories" id="filtros">
-        <button class="cat-btn active" onclick="filtrarCat('Todos', this)">Todos</button>
-        <button class="cat-btn" onclick="filtrarCat('Frutas', this)">Frutas</button>
-        <button class="cat-btn" onclick="filtrarCat('Legumes', this)">Legumes</button>
-        <button class="cat-btn" onclick="filtrarCat('Verduras', this)">Verduras</button>
-        <button class="cat-btn" onclick="filtrarCat('Bebidas', this)">Bebidas</button>
+        <button class="cat-btn active" onclick="filtrarCat('Todos', this)">🌿 Todos</button>
+        <button class="cat-btn" onclick="filtrarCat('Regional', this)">🏹 Regional</button>
+        <button class="cat-btn" onclick="filtrarCat('Frutas', this)">🍎 Frutas</button>
+        <button class="cat-btn" onclick="filtrarCat('Legumes', this)">🥦 Legumes</button>
+        <button class="cat-btn" onclick="filtrarCat('Peixes', this)">🐟 Peixes</button>
     </div>
 
     <div class="grid" id="lista-produtos"></div>
 </div>
 
-<div class="cart-footer" onclick="enviarWhatsApp()">
-    <span id="cart-info">🛒 0 itens</span>
-    <span id="cart-total">Total: R$ 0,00</span>
-    <strong>Finalizar Pedido ➔</strong>
+<div class="cart-bar" id="cart-bar" onclick="toggleModal(true)" style="display: none;">
+    <div>
+        <span id="cart-count">0</span> itens selecionados
+    </div>
+    <div id="cart-total">R$ 0,00 ➔</div>
 </div>
 
-<footer>
-    <div class="contato-info">
-        <strong>📍 Endereço:</strong> Rua Amapá, nº 19 - Conjunto Vieiralves<br>
-        <strong>📸 Instagram:</strong> <a href="https://instagram.com/hortifruti_vitoria" target="_blank">@hortifruti_vitoria</a><br>
-        <strong>📞 Telefone:</strong> (92) 99449-8445
+<div class="checkout-modal" id="checkout-modal">
+    <div class="modal-header">
+        <button onclick="toggleModal(false)" style="border:none; background:none; font-size: 20px;"><i class="fas fa-arrow-left"></i></button>
+        <h2 style="margin:0; font-size: 18px;">Meu Pedido</h2>
+        <div style="width:20px;"></div>
     </div>
-</footer>
+    <div class="modal-body">
+        <div id="itens-carrinho"></div>
+        
+        <div class="form-group">
+            <h3>Finalizar Pedido</h3>
+            <input type="text" id="nome-cliente" placeholder="Seu Nome">
+            <input type="text" id="endereco-cliente" placeholder="Bairro / Endereço de entrega">
+            <select id="pagamento">
+                <option value="">Forma de Pagamento</option>
+                <option value="Pix">Pix</option>
+                <option value="Cartão">Cartão (Levamos a máquina)</option>
+                <option value="Dinheiro">Dinheiro</option>
+            </select>
+            <button class="btn-finish" onclick="enviarWhatsApp()">PEDIR PELO WHATSAPP</button>
+        </div>
+    </div>
+</div>
 
 <script>
     const produtos = [
-        { id: 1, nome: "Uva Vitória", preco: 12.90, cat: "Frutas", img: "🍇" },
-        { id: 2, nome: "Banana Prata", preco: 6.50, cat: "Frutas", img: "🍌" },
-        { id: 3, nome: "Batata Inglesa", preco: 6.99, cat: "Legumes", img: "🥔" },
-        { id: 4, nome: "Suco de Laranja", preco: 15.00, cat: "Bebidas", img: "🍹" },
-        { id: 5, nome: "Tomate Italiano", preco: 8.50, cat: "Legumes", img: "🍅" },
-        { id: 6, nome: "Alface Crespa", preco: 3.50, cat: "Verduras", img: "🥬" }
+        // REGIONAL (10 itens)
+        { id: 1, cat: "Regional", nome: "Tucumã do Amazonas (Lata)", preco: 25.00, img: "https://images.unsplash.com/photo-1610450949065-2f2231db00a6?w=400" },
+        { id: 2, cat: "Regional", nome: "Polpa de Cupuaçu 1kg", preco: 22.00, img: "https://images.unsplash.com/photo-1595124253373-f61b07224f2b?w=400" },
+        { id: 3, cat: "Regional", nome: "Farinha do Uarini (Ovinha)", preco: 18.00, img: "https://images.unsplash.com/photo-1596434458399-5435948f936b?w=400" },
+        { id: 4, cat: "Regional", nome: "Açaí Médio 1L", preco: 15.00, img: "https://images.unsplash.com/photo-1590301157890-4810ed352733?w=400" },
+        { id: 5, cat: "Regional", nome: "Castanha do Pará (Pote)", preco: 20.00, img: "https://images.unsplash.com/photo-1590779033100-9f60705a2f3b?w=400" },
+        { id: 6, cat: "Regional", nome: "Buriti (Fruto)", preco: 12.00, img: "https://images.unsplash.com/photo-1628102420284-8664425a3961?w=400" },
+        { id: 7, cat: "Regional", nome: "Tapioca (Goma) 1kg", preco: 10.00, img: "https://images.unsplash.com/photo-1615485290382-441e4d0c9cb5?w=400" },
+        { id: 8, cat: "Regional", nome: "Banana Pacovã (Palma)", preco: 9.00, img: "https://images.unsplash.com/photo-1571771894821-ad9902d83f4a?w=400" },
+        { id: 9, cat: "Regional", nome: "Mel de Abelha Regional", preco: 28.00, img: "https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=400" },
+        { id: 10, cat: "Regional", nome: "Pimenta Murupi", preco: 5.00, img: "https://images.unsplash.com/photo-1588252303782-cb80119abd6d?w=400" },
+
+        // FRUTAS (10 itens)
+        { id: 11, cat: "Frutas", nome: "Uva Vitória Sem Semente", preco: 14.90, img: "https://images.unsplash.com/photo-1537084642907-629340c7e59c?w=400" },
+        { id: 12, cat: "Frutas", nome: "Maçã Gala (Unid)", preco: 2.50, img: "https://images.unsplash.com/photo-1560806887-1e4cd0b6bccb?w=400" },
+        { id: 13, cat: "Frutas", nome: "Banana Prata (Dúzia)", preco: 10.00, img: "https://images.unsplash.com/photo-1543218024-57a70143c369?w=400" },
+        { id: 14, cat: "Frutas", nome: "Mamão Papaia", preco: 6.90, img: "https://images.unsplash.com/photo-1613110298019-35928e185e45?w=400" },
+        { id: 15, cat: "Frutas", nome: "Melancia Inteira", preco: 18.00, img: "https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=400" },
+        { id: 16, cat: "Frutas", nome: "Manga Palmer", preco: 5.50, img: "https://images.unsplash.com/photo-1553279768-865429fa0078?w=400" },
+        { id: 17, cat: "Frutas", nome: "Abacaxi (Unid)", preco: 7.00, img: "https://images.unsplash.com/photo-1550258114-b834e70e9be1?w=400" },
+        { id: 18, cat: "Frutas", nome: "Laranja Pera (Saco)", preco: 12.00, img: "https://images.unsplash.com/photo-154751470b-42782101795e?w=400" },
+        { id: 19, cat: "Frutas", nome: "Limão Taiti (Kg)", preco: 6.00, img: "https://images.unsplash.com/photo-1590502593747-42a996133562?w=400" },
+        { id: 20, cat: "Frutas", nome: "Morango (Bandeja)", preco: 15.00, img: "https://images.unsplash.com/photo-1464965911861-746a04b4bca6?w=400" },
+
+        // LEGUMES (10 itens)
+        { id: 21, cat: "Legumes", nome: "Batata Inglesa (Kg)", preco: 7.50, img: "https://images.unsplash.com/photo-1518977676601-b53f02bad67b?w=400" },
+        { id: 22, cat: "Legumes", nome: "Cenoura (Kg)", preco: 6.00, img: "https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?w=400" },
+        { id: 23, cat: "Legumes", nome: "Cebola Branca (Kg)", preco: 6.50, img: "https://images.unsplash.com/photo-1508747703725-719777637510?w=400" },
+        { id: 24, cat: "Legumes", nome: "Tomate Saladete (Kg)", preco: 8.90, img: "https://images.unsplash.com/photo-1518130914450-129679c2f520?w=400" },
+        { id: 25, cat: "Legumes", nome: "Pimentão Verde (Kg)", preco: 7.00, img: "https://images.unsplash.com/photo-1563513381-0183182b3d85?w=400" },
+        { id: 26, cat: "Legumes", nome: "Abóbora/Jerimum (Kg)", preco: 4.50, img: "https://images.unsplash.com/photo-1506807803488-8eafc15537a6?w=400" },
+        { id: 27, cat: "Legumes", nome: "Chuchu (Unid)", preco: 3.00, img: "https://images.unsplash.com/photo-1628102420284-8664425a3961?w=400" },
+        { id: 28, cat: "Legumes", nome: "Repolho Verde", preco: 5.00, img: "https://images.unsplash.com/photo-1594282486552-05b4d80fbb9f?w=400" },
+        { id: 29, cat: "Legumes", nome: "Alface Hidropônica", preco: 4.00, img: "https://images.unsplash.com/photo-1622206151226-18ca2c9ab4a1?w=400" },
+        { id: 30, cat: "Legumes", nome: "Macaxeira Descascada", preco: 9.00, img: "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=400" },
+
+        // PEIXES (10 itens)
+        { id: 31, cat: "Peixes", nome: "Banda de Tambaqui Assada", preco: 55.00, img: "https://images.unsplash.com/photo-1524704654690-b56c05c78a00?w=400" },
+        { id: 32, cat: "Peixes", nome: "Filé de Tucunaré 1kg", preco: 42.00, img: "https://images.unsplash.com/photo-1534604973900-c41ab4c287bb?w=400" },
+        { id: 33, cat: "Peixes", nome: "Pirarucu de Manejo (Lombo)", preco: 48.00, img: "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=400" },
+        { id: 34, cat: "Peixes", nome: "Matrinxã Recheada", preco: 60.00, img: "https://images.unsplash.com/photo-1534080564677-6e79876893a5?w=400" },
+        { id: 35, cat: "Peixes", nome: "Sardinha Regional (Kg)", preco: 15.00, img: "https://images.unsplash.com/photo-1559737558-2f5a35f4523b?w=400" },
+        { id: 36, cat: "Peixes", nome: "Jaraqui Tratado (10 unid)", preco: 25.00, img: "https://images.unsplash.com/photo-1535391451034-4bc15309323c?w=400" },
+        { id: 37, cat: "Peixes", nome: "Filé de Tilápia", preco: 38.00, img: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=400" },
+        { id: 38, cat: "Peixes", nome: "Peixe Salgado", preco: 30.00, img: "https://images.unsplash.com/photo-1534080564677-6e79876893a5?w=400" },
+        { id: 39, cat: "Peixes", nome: "Pacu Inteiro", preco: 22.00, img: "https://images.unsplash.com/photo-1535391451034-4bc15309323c?w=400" },
+        { id: 40, cat: "Peixes", nome: "Camarão Regional (Pote)", preco: 35.00, img: "https://images.unsplash.com/photo-1559742811-822873691df8?w=400" },
     ];
 
     let carrinho = [];
-    let categoriaAtual = "Todos";
+    let categoriaAtiva = "Todos";
 
-    function render(lista = produtos) {
-        const list = document.getElementById('lista-produtos');
-        list.innerHTML = lista.map(p => `
+    function render(filtro = "") {
+        const grid = document.getElementById('lista-produtos');
+        const filtrados = produtos.filter(p => 
+            (categoriaAtiva === "Todos" || p.cat === categoriaAtiva) &&
+            p.nome.toLowerCase().includes(filtro.toLowerCase())
+        );
+
+        grid.innerHTML = filtrados.map(p => `
             <div class="card">
-                <span class="emoji">${p.img}</span>
-                <h3>${p.nome}</h3>
-                <span class="price">R$ ${p.preco.toFixed(2)}</span>
-                <button class="btn-add" onclick="add(${p.id})">Adicionar</button>
+                <img src="${p.img}" alt="${p.nome}" loading="lazy">
+                <div class="card-body">
+                    <h3>${p.nome}</h3>
+                    <div class="price">R$ ${p.preco.toFixed(2)}</div>
+                    <button class="btn-add" onclick="add(${p.id})">Adicionar</button>
+                </div>
             </div>
         `).join('');
     }
 
-    function filtrar() {
-        const termo = document.getElementById('busca').value.toLowerCase();
-        const filtrados = produtos.filter(p => 
-            p.nome.toLowerCase().includes(termo) && 
-            (categoriaAtual === "Todos" || p.cat === categoriaAtual)
-        );
-        render(filtrados);
-    }
+    function filtrar() { render(document.getElementById('busca').value); }
 
     function filtrarCat(cat, btn) {
-        categoriaAtual = cat;
-        
-        // Atualiza visual dos botões
+        categoriaAtiva = cat;
         document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        
-        filtrar();
+        render();
     }
 
     function add(id) {
-        const prod = produtos.find(p => p.id === id);
-        carrinho.push(prod);
-        atualizarCarrinho();
+        const p = produtos.find(item => item.id === id);
+        carrinho.push({...p, cartId: Date.now()});
+        atualizarBarraCarrinho();
     }
 
-    function atualizarCarrinho() {
-        const total = carrinho.reduce((acc, p) => acc + p.preco, 0);
-        document.getElementById('cart-info').innerText = `🛒 ${carrinho.length} itens`;
-        document.getElementById('cart-total').innerText = `Total: R$ ${total.toFixed(2)}`;
+    function remover(cartId) {
+        carrinho = carrinho.filter(p => p.cartId !== cartId);
+        atualizarBarraCarrinho();
+        renderCarrinho();
+    }
+
+    function atualizarBarraCarrinho() {
+        const bar = document.getElementById('cart-bar');
+        if(carrinho.length > 0) {
+            bar.style.display = 'flex';
+            document.getElementById('cart-count').innerText = carrinho.length;
+            const total = carrinho.reduce((acc, p) => acc + p.preco, 0);
+            document.getElementById('cart-total').innerText = `R$ ${total.toFixed(2)} ➔`;
+        } else {
+            bar.style.display = 'none';
+        }
+    }
+
+    function toggleModal(show) {
+        document.getElementById('checkout-modal').classList.toggle('active', show);
+        if(show) renderCarrinho();
+    }
+
+    function renderCarrinho() {
+        const div = document.getElementById('itens-carrinho');
+        if(carrinho.length === 0) {
+            div.innerHTML = "<p>Carrinho vazio...</p>";
+            return;
+        }
+        div.innerHTML = carrinho.map(p => `
+            <div class="cart-item">
+                <img src="${p.img}">
+                <div class="cart-item-info">
+                    <h4>${p.nome}</h4>
+                    <strong>R$ ${p.preco.toFixed(2)}</strong>
+                </div>
+                <button class="btn-del" onclick="remover(${p.cartId})"><i class="fas fa-trash"></i></button>
+            </div>
+        `).join('');
     }
 
     function enviarWhatsApp() {
-        if (carrinho.length === 0) return alert("Seu carrinho está vazio!");
+        const nome = document.getElementById('nome-cliente').value;
+        const endereco = document.getElementById('endereco-cliente').value;
+        const pgto = document.getElementById('pagamento').value;
 
-        const numeroTelefone = "5592994498445";
-        let mensagem = "*Novo Pedido - Hortifruti Vitória*\n\n";
+        if(!nome || !pgto) return alert("Preencha nome e forma de pagamento!");
+
+        let msg = `*PEDIDO - HORTIFRUTI VITÓRIA*\n\n`;
+        msg += `👤 *Cliente:* ${nome}\n`;
+        msg += `📍 *Entrega:* ${endereco}\n`;
+        msg += `💳 *Pagamento:* ${pgto}\n\n`;
+        msg += `*PRODUTOS:*\n`;
         
-        const resumo = carrinho.reduce((acc, curr) => {
-            acc[curr.nome] = (acc[curr.nome] || 0) + 1;
-            return acc;
-        }, {});
-
-        for (let item in resumo) {
-            mensagem += `• ${resumo[item]}x ${item}\n`;
-        }
-
+        carrinho.forEach(p => msg += `• ${p.nome} - R$ ${p.preco.toFixed(2)}\n`);
+        
         const total = carrinho.reduce((acc, p) => acc + p.preco, 0);
-        mensagem += `\n*Total: R$ ${total.toFixed(2)}*`;
-        mensagem += `\n\n📍 *Endereço de Entrega:* Rua Amapá, nº 19 - Conjunto Vieiralves`;
+        msg += `\n*TOTAL: R$ ${total.toFixed(2)}*`;
 
-        const link = `https://wa.me/${numeroTelefone}?text=${encodeURIComponent(mensagem)}`;
+        const link = `https://wa.me/5592994498445?text=${encodeURIComponent(msg)}`;
         window.open(link, '_blank');
     }
 
