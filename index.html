@@ -183,8 +183,10 @@
                         cat: col[1].trim(), 
                         nome: col[2].trim(), 
                         preco: parseFloat(col[3]), 
-                        img: col[4].trim(),
-                        pesavel: col[5] ? col[5].trim().toLowerCase() === 'sim' : false 
+                        // Coluna E (índice 4) identifica se é pesável
+                        pesavel: col[4] ? col[4].trim().toLowerCase() === 'sim' : false,
+                        // Coluna F (índice 5) contém a imagem
+                        img: col[5] ? col[5].trim() : "" 
                     };
                 }
             }).filter(p => p);
@@ -287,7 +289,7 @@
         let temPesavel = false;
         Object.values(carrinho).forEach(p => {
             if (p.pesavel) temPesavel = true;
-            msg += `• ${p.qtd}x ${p.nome} ${p.pesavel ? '(*)' : ''} - R$ ${(p.preco * p.qtd).toFixed(2)}\n`;
+            msg += `• ${p.qtd}x ${p.nome} ${p.pesavel ? '(*)' : ''} - R$ ${(p.preco * p.qtd).toFixed(2).replace('.',',')}\n`;
         });
 
         const subtotal = Object.values(carrinho).reduce((acc, p) => acc + (p.preco * p.qtd), 0);
