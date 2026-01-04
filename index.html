@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hortifruti Vitória | Catálogo Inteligente</title>
+    <title>Hortifruti Vitória | Catálogo</title>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
@@ -12,25 +12,19 @@
         :root {
             --verde-primario: #2ecc71;
             --verde-escuro: #27ae60;
-            --laranja: #f39c12;
+            --laranja: #f39c12; /* Cor solicitada para o carrinho */
             --bg-leve: #f8f9fa;
             --texto: #2d3436;
-            --vermelho: #e74c3c;
-            --cinza-escuro: #111;
         }
 
         * { box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        body { background: var(--bg-leve); margin: 0; color: var(--texto); padding-bottom: 100px; }
+        body { background: var(--bg-leve); margin: 0; color: var(--texto); padding-bottom: 120px; }
 
-        /* CABEÇALHO */
         header { 
             background: linear-gradient(135deg, var(--verde-escuro), var(--verde-primario));
             color: white; padding: 40px 20px; text-align: center;
-            border-radius: 0 0 30px 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-radius: 0 0 30px 30px;
         }
-        .badge-status { padding: 5px 15px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-bottom: 10px; display: inline-block; }
-        .status-aberto { background: #27ae60; border: 1px solid white; }
-        .status-fechado { background: var(--vermelho); border: 1px solid white; }
 
         .container { max-width: 1000px; margin: auto; padding: 0 15px; }
 
@@ -41,7 +35,7 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.1); font-size: 16px; outline: none;
         }
         .categories { display: flex; gap: 10px; overflow-x: auto; padding: 20px 0; scrollbar-width: none; }
-        .cat-btn { background: white; border: none; padding: 10px 20px; border-radius: 15px; cursor: pointer; font-weight: 600; white-space: nowrap; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .cat-btn { background: white; border: none; padding: 10px 20px; border-radius: 15px; cursor: pointer; font-weight: 600; white-space: nowrap; }
         .cat-btn.active { background: var(--verde-escuro); color: white; }
 
         /* CARDS */
@@ -52,45 +46,57 @@
         .card img { width: 100%; height: 140px; object-fit: cover; }
         .card-body { padding: 12px; flex-grow: 1; text-align: center; }
         .price { color: var(--verde-escuro); font-weight: 700; font-size: 18px; margin: 5px 0; }
-        .label-peso { font-size: 10px; color: var(--laranja); font-weight: bold; display: block; margin-bottom: 5px; }
         
         .qty-controls { display: flex; align-items: center; justify-content: center; gap: 15px; margin-top: 10px; background: #f1f1f1; border-radius: 10px; padding: 5px; }
         .qty-btn { background: white; border: none; width: 30px; height: 30px; border-radius: 8px; cursor: pointer; font-weight: bold; }
 
-        /* CARRINHO BARRA */
+        /* CARRINHO LARANJA COM ANIMAÇÃO */
         .cart-bar {
-            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-            width: 90%; max-width: 500px; background: var(--cinza-escuro); color: white;
+            position: fixed; bottom: 85px; left: 50%; transform: translateX(-50%);
+            width: 90%; max-width: 500px; background: var(--laranja); color: white;
             padding: 15px 25px; border-radius: 25px; display: none;
             justify-content: space-between; align-items: center; cursor: pointer; z-index: 999;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
         }
 
-        /* MODAL CHECKOUT */
-        .checkout-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 1000; display: none; flex-direction: column; }
+        /* Efeito de "pulo" no carrinho ao adicionar item */
+        @keyframes bump {
+            0% { transform: translateX(-50%) scale(1); }
+            50% { transform: translateX(-50%) scale(1.1); }
+            100% { transform: translateX(-50%) scale(1); }
+        }
+        .cart-bump { animation: bump 0.3s ease-out; }
+
+        /* BOTÃO FLUTUANTE WHATSAPP (GRUPO) */
+        .btn-whatsapp-flutuante {
+            position: fixed; bottom: 20px; right: 20px;
+            background: #25d366; color: white; padding: 12px 20px;
+            border-radius: 50px; text-decoration: none; display: flex;
+            align-items: center; gap: 10px; font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 1000;
+        }
+
+        /* MODAL E RODAPÉ */
+        .checkout-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 1001; display: none; flex-direction: column; }
         .checkout-modal.active { display: flex; }
-        .modal-header { padding: 20px; border-bottom: 1px solid #eee; display: flex; align-items: center; justify-content: space-between; }
         .modal-body { padding: 20px; overflow-y: auto; flex-grow: 1; }
 
-        .aviso-peso { background: #fff3cd; color: #856404; padding: 12px; border-radius: 10px; font-size: 13px; margin-bottom: 15px; border: 1px solid #ffeeba; display: none; align-items: center; gap: 10px; }
-
-        .form-group { margin-top: 20px; background: #f9f9f9; padding: 15px; border-radius: 15px; }
-        input, select { width: 100%; padding: 15px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 12px; font-size: 16px; }
-        .btn-finish { background: var(--verde-escuro); color: white; border: none; width: 100%; padding: 18px; border-radius: 15px; font-weight: bold; font-size: 16px; cursor: pointer; }
+        footer { 
+            background: #333; color: white; padding: 30px 20px; text-align: center; margin-top: 40px;
+        }
+        .footer-link { color: var(--verde-primario); text-decoration: none; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <header>
-    <div class="header-content">
-        <div id="status-loja" class="badge-status">Verificando...</div><br>
-        <h1 style="margin: 0;">Hortifruti Vitória</h1>
-        <p style="margin: 5px 0 0; opacity: 0.9;"><i class="fas fa-map-marker-alt"></i> Vieiralves, Manaus</p>
-    </div>
+    <h1>Hortifruti Vitória</h1>
+    <p><i class="fas fa-motorcycle"></i> Entregas no Vieiralves</p>
 </header>
 
 <div class="container">
     <div class="search-container">
-        <input type="text" id="busca" class="search-box" placeholder="O que você procura hoje?" onkeyup="filtrar()">
+        <input type="text" id="busca" class="search-box" placeholder="Buscar no hortifruti..." onkeyup="filtrar()">
     </div>
 
     <div class="categories" id="filtros">
@@ -98,11 +104,15 @@
         <button class="cat-btn" onclick="filtrarCat('Regional', this)">🏹 Regional</button>
         <button class="cat-btn" onclick="filtrarCat('Frutas', this)">🍎 Frutas</button>
         <button class="cat-btn" onclick="filtrarCat('Legumes', this)">🥦 Legumes</button>
-        <button class="cat-btn" onclick="filtrarCat('Peixes', this)">🐟 Peixes</button>
     </div>
 
     <div id="lista-produtos" class="grid"></div>
 </div>
+
+<a href="https://chat.whatsapp.com/SEU_LINK_AQUI" class="btn-whatsapp-flutuante" target="_blank">
+    <i class="fab fa-whatsapp" style="font-size: 24px;"></i>
+    <span>Entre para o nosso grupo de ofertas</span>
+</a>
 
 <div class="cart-bar" id="cart-bar" onclick="toggleModal(true)">
     <div><i class="fas fa-shopping-basket"></i> <span id="cart-count">0</span> itens</div>
@@ -110,40 +120,32 @@
 </div>
 
 <div class="checkout-modal" id="checkout-modal">
-    <div class="modal-header">
-        <button onclick="toggleModal(false)" style="border:none; background:none; font-size: 18px; cursor:pointer"><i class="fas fa-arrow-left"></i> Voltar</button>
-        <h2 style="margin:0; font-size: 18px;">Seu Carrinho</h2>
+    <div style="padding: 20px; border-bottom: 1px solid #eee; display: flex; align-items: center; justify-content: space-between;">
+        <button onclick="toggleModal(false)" style="border:none; background:none; font-size: 18px;"><i class="fas fa-arrow-left"></i> Voltar</button>
+        <h2 style="margin:0;">Finalizar Pedido</h2>
         <div></div>
     </div>
     <div class="modal-body">
-        <div id="aviso-pesagem" class="aviso-peso">
-            <i class="fas fa-balance-scale"></i>
-            <span><strong>Atenção:</strong> Itens com * estão sujeitos a pesagem e pequena variação no valor.</span>
-        </div>
-
         <div id="itens-carrinho"></div>
+        <div id="total-produtos-modal" style="margin: 20px 0; padding: 10px; background: #eee; border-radius: 10px; font-weight: bold; text-align: right; font-size: 18px;"></div>
         
-        <div class="form-group">
-            <input type="text" id="nome-cliente" placeholder="Seu Nome Completo">
-            <select id="bairro-entrega" onchange="atualizarTotal()">
-                <option value="">Selecione seu Bairro</option>
-                <option value="0">Vieiralves (Frete Grátis)</option>
-                <option value="10">Outro bairro próximo (R$ 10,00)</option>
-                <option value="Outro">Outro bairro (A combinar)</option>
+        <div style="background: #f9f9f9; padding: 15px; border-radius: 15px;">
+            <input type="text" id="nome-cliente" placeholder="Seu Nome">
+            <select id="bairro-entrega" onchange="atualizarTotalModal()">
+                <option value="0">Vieiralves (Grátis)</option>
+                <option value="10">Outros Bairros (R$ 10)</option>
             </select>
-            <input type="text" id="endereco-cliente" placeholder="Rua, número e apto">
-            <select id="pagamento">
-                <option value="">Forma de Pagamento</option>
-                <option value="Pix">Pix</option>
-                <option value="Cartão">Cartão</option>
-                <option value="Dinheiro">Dinheiro</option>
-            </select>
-
-            <div id="resumo-financeiro" style="margin: 15px 0; font-weight: bold; font-size: 18px; color: var(--verde-escuro);"></div>
-            <button class="btn-finish" id="btn-whatsapp" onclick="enviarWhatsApp()">PEDIR PELO WHATSAPP</button>
+            <input type="text" id="endereco-cliente" placeholder="Endereço Completo">
+            <button onclick="enviarWhatsApp()" style="background: var(--verde-escuro); color: white; width: 100%; padding: 15px; border: none; border-radius: 10px; font-weight: bold; margin-top: 10px;">PEDIR PELO WHATSAPP</button>
         </div>
     </div>
 </div>
+
+<footer>
+    <p><strong>📍 Endereço:</strong> Rua Amapá, nº 19 - Conjunto Vieiralves</p>
+    <p><strong>📞 Contato:</strong> (92) 99449-8445</p>
+    <p><strong>📸 Siga-nos:</strong> <a href="https://instagram.com/hortifruti_vitoria" class="footer-link" target="_blank">@hortifruti_vitoria</a></p>
+</footer>
 
 <script>
     const URL_PLANILHA = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRfG9ACYb6dSnGeHioNdZpLL11MLm0FakxrhxMbL4ctyvRp-jAKNV7qz3zInyuaEIM7TbXAiUlo3upR/pub?gid=0&single=true&output=csv";
@@ -151,30 +153,12 @@
     let produtos = [];
     let carrinho = {};
     let categoriaAtiva = "Todos";
-    let lojaAberta = false;
-
-    function verificarHorario() {
-        const agora = new Date();
-        const horaManaus = agora.getUTCHours() - 4;
-        const horaReal = horaManaus < 0 ? horaManaus + 24 : horaManaus;
-        const statusEl = document.getElementById('status-loja');
-        if (horaReal >= 7 && horaReal < 22) {
-            statusEl.innerText = "● LOJA ABERTA (07h às 22h)";
-            statusEl.className = "badge-status status-aberto";
-            lojaAberta = true;
-        } else {
-            statusEl.innerText = "● LOJA FECHADA (Abre às 07h)";
-            statusEl.className = "badge-status status-fechado";
-            lojaAberta = false;
-        }
-    }
 
     async function buscarProdutos() {
         try {
             const response = await fetch(URL_PLANILHA);
             const data = await response.text();
             const linhas = data.split('\n').slice(1);
-            
             produtos = linhas.map(linha => {
                 const col = linha.split(',');
                 if (col.length >= 5) {
@@ -183,9 +167,7 @@
                         cat: col[1].trim(), 
                         nome: col[2].trim(), 
                         preco: parseFloat(col[3]), 
-                        // Coluna E (índice 4) identifica se é pesável
                         pesavel: col[4] ? col[4].trim().toLowerCase() === 'sim' : false,
-                        // Coluna F (índice 5) contém a imagem
                         img: col[5] ? col[5].trim() : "" 
                     };
                 }
@@ -196,28 +178,23 @@
 
     function render(filtro = "") {
         const grid = document.getElementById('lista-produtos');
-        const filtrados = produtos.filter(p => 
-            (categoriaAtiva === "Todos" || p.cat === categoriaAtiva) &&
-            p.nome.toLowerCase().includes(filtro.toLowerCase())
-        );
-
+        const filtrados = produtos.filter(p => (categoriaAtiva === "Todos" || p.cat === categoriaAtiva) && p.nome.toLowerCase().includes(filtro.toLowerCase()));
         grid.innerHTML = filtrados.map(p => {
             const qtd = carrinho[p.id] ? carrinho[p.id].qtd : 0;
             return `
             <div class="card">
-                <img src="${p.img}" loading="lazy">
+                <img src="${p.img}">
                 <div class="card-body">
                     <h3>${p.nome}</h3>
                     <div class="price">R$ ${p.preco.toFixed(2).replace('.',',')}</div>
-                    ${p.pesavel ? '<span class="label-peso">Item por KG</span>' : ''}
                     <div class="qty-controls">
                         <button class="qty-btn" onclick="mudarQtd('${p.id}', -1)">-</button>
-                        <span id="qtd-${p.id}" style="font-weight:bold">${qtd}</span>
+                        <span id="qtd-${p.id}">${qtd}</span>
                         <button class="qty-btn" onclick="mudarQtd('${p.id}', 1)">+</button>
                     </div>
                 </div>
-            </div>
-        `}).join('');
+            </div>`;
+        }).join('');
     }
 
     function mudarQtd(id, delta) {
@@ -225,80 +202,45 @@
         if (!carrinho[id]) carrinho[id] = { ...p, qtd: 0 };
         carrinho[id].qtd += delta;
         if (carrinho[id].qtd <= 0) delete carrinho[id];
-        document.getElementById(`qtd-${id}`).innerText = carrinho[id] ? carrinho[id].qtd : 0;
+        
+        // Atualiza interface
+        const qtdEl = document.getElementById(`qtd-${id}`);
+        if(qtdEl) qtdEl.innerText = carrinho[id] ? carrinho[id].qtd : 0;
+        
         atualizarBarra();
+        
+        // Efeito visual no carrinho
+        const bar = document.getElementById('cart-bar');
+        bar.classList.remove('cart-bump');
+        void bar.offsetWidth; // Trigger reflow
+        bar.classList.add('cart-bump');
     }
 
     function atualizarBarra() {
         const totalItens = Object.values(carrinho).reduce((acc, p) => acc + p.qtd, 0);
         const totalDinheiro = Object.values(carrinho).reduce((acc, p) => acc + (p.preco * p.qtd), 0);
-        document.getElementById('cart-bar').style.display = totalItens > 0 ? 'flex' : 'none';
+        const bar = document.getElementById('cart-bar');
+        bar.style.display = totalItens > 0 ? 'flex' : 'none';
         document.getElementById('cart-count').innerText = totalItens;
         document.getElementById('cart-total').innerText = `R$ ${totalDinheiro.toFixed(2).replace('.',',')} ➔`;
     }
 
     function toggleModal(show) {
         document.getElementById('checkout-modal').classList.toggle('active', show);
-        if(show) renderItensCheckout();
+        if(show) {
+            const subtotal = Object.values(carrinho).reduce((acc, p) => acc + (p.preco * p.qtd), 0);
+            document.getElementById('total-produtos-modal').innerText = `Total Produtos: R$ ${subtotal.toFixed(2).replace('.',',')}`;
+            renderItensCheckout();
+        }
     }
 
     function renderItensCheckout() {
         const div = document.getElementById('itens-carrinho');
-        const aviso = document.getElementById('aviso-pesagem');
-        let temPesavel = false;
-
-        div.innerHTML = Object.values(carrinho).map(p => {
-            if (p.pesavel) temPesavel = true;
-            return `
-                <div style="display:flex; justify-content:space-between; margin-bottom:10px; border-bottom:1px solid #eee; padding-bottom:5px;">
-                    <span>${p.pesavel ? '*' : ''}${p.qtd}x ${p.nome}</span>
-                    <span>R$ ${(p.preco * p.qtd).toFixed(2).replace('.',',')}</span>
-                </div>
-            `;
-        }).join('') || "Carrinho vazio.";
-        
-        aviso.style.display = temPesavel ? 'flex' : 'none';
-        atualizarTotal();
-    }
-
-    function atualizarTotal() {
-        const subtotal = Object.values(carrinho).reduce((acc, p) => acc + (p.preco * p.qtd), 0);
-        const taxa = document.getElementById('bairro-entrega').value;
-        const resumo = document.getElementById('resumo-financeiro');
-        if (taxa === "Outro") {
-            resumo.innerHTML = `Total: R$ ${subtotal.toFixed(2).replace('.',',')} + Taxa a combinar`;
-        } else if (taxa !== "") {
-            const totalFinal = subtotal + parseFloat(taxa);
-            resumo.innerHTML = `TOTAL: R$ ${totalFinal.toFixed(2).replace('.',',')}`;
-        }
-    }
-
-    function enviarWhatsApp() {
-        if (!lojaAberta) return alert("A loja está fechada!");
-        const nome = document.getElementById('nome-cliente').value;
-        const bairro = document.getElementById('bairro-entrega').options[document.getElementById('bairro-entrega').selectedIndex].text;
-        const endereco = document.getElementById('endereco-cliente').value;
-        const pgto = document.getElementById('pagamento').value;
-        const taxa = document.getElementById('bairro-entrega').value;
-
-        if(!nome || !pgto || taxa === "") return alert("Preencha os dados de entrega!");
-
-        let msg = `*PEDIDO - HORTIFRUTI VITÓRIA*\n\n`;
-        msg += `👤 *Cliente:* ${nome}\n📍 *Bairro:* ${bairro}\n🏠 *End:* ${endereco}\n💳 *Pgto:* ${pgto}\n\n*PRODUTOS:*\n`;
-        
-        let temPesavel = false;
-        Object.values(carrinho).forEach(p => {
-            if (p.pesavel) temPesavel = true;
-            msg += `• ${p.qtd}x ${p.nome} ${p.pesavel ? '(*)' : ''} - R$ ${(p.preco * p.qtd).toFixed(2).replace('.',',')}\n`;
-        });
-
-        const subtotal = Object.values(carrinho).reduce((acc, p) => acc + (p.preco * p.qtd), 0);
-        const totalTxt = taxa === "Outro" ? `${subtotal.toFixed(2).replace('.',',')} + Taxa` : (subtotal + parseFloat(taxa)).toFixed(2).replace('.',',');
-        msg += `\n*TOTAL ESTIMADO: R$ ${totalTxt}*`;
-        
-        if (temPesavel) msg += `\n\n⚠️ *(*) Itens sujeitos a pesagem final.*`;
-
-        window.open(`https://wa.me/5592994498445?text=${encodeURIComponent(msg)}`, '_blank');
+        div.innerHTML = Object.values(carrinho).map(p => `
+            <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                <span>${p.pesavel ? '*' : ''}${p.qtd}x ${p.nome}</span>
+                <span>R$ ${(p.preco * p.qtd).toFixed(2)}</span>
+            </div>`).join('');
     }
 
     function filtrar() { render(document.getElementById('busca').value); }
@@ -309,7 +251,6 @@
         render();
     }
 
-    verificarHorario();
     buscarProdutos();
 </script>
 </body>
