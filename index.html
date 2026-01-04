@@ -15,6 +15,7 @@
             --laranja: #f39c12;
             --bg-leve: #f8f9fa;
             --texto: #2d3436;
+            --vermelho: #e74c3c;
         }
 
         * { box-sizing: border-box; font-family: 'Poppins', sans-serif; }
@@ -26,6 +27,10 @@
             border-radius: 0 0 30px 30px;
         }
 
+        .badge-status { padding: 5px 15px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-bottom: 10px; display: inline-block; }
+        .status-aberto { background: #27ae60; border: 1px solid white; }
+        .status-fechado { background: var(--vermelho); border: 1px solid white; }
+
         .container { max-width: 1000px; margin: auto; padding: 0 15px; }
 
         .search-container { position: relative; margin-top: -25px; z-index: 10; }
@@ -34,8 +39,13 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.1); font-size: 16px; outline: none;
         }
 
+        /* Categorias */
+        .categories { display: flex; gap: 10px; overflow-x: auto; padding: 20px 0; scrollbar-width: none; }
+        .cat-btn { background: white; border: none; padding: 10px 20px; border-radius: 15px; cursor: pointer; font-weight: 600; white-space: nowrap; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .cat-btn.active { background: var(--verde-escuro); color: white; }
+
         /* Produtos */
-        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
         @media (min-width: 768px) { .grid { grid-template-columns: repeat(4, 1fr); } }
 
         .card { background: white; border-radius: 18px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
@@ -43,15 +53,6 @@
         .card-body { padding: 12px; flex-grow: 1; text-align: center; }
         .price { color: var(--verde-escuro); font-weight: 700; font-size: 18px; margin: 5px 0; }
         .label-peso { font-size: 10px; color: var(--laranja); font-weight: bold; display: block; margin-bottom: 5px; }
-
-        /* Carrinho Laranja */
-        .cart-bar {
-            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-            width: 90%; max-width: 500px; background: var(--laranja); color: white;
-            padding: 15px 25px; border-radius: 25px; display: none;
-            justify-content: space-between; align-items: center; cursor: pointer; z-index: 999;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-        }
 
         /* Botão WhatsApp Compacto */
         .whatsapp-float {
@@ -62,10 +63,19 @@
             transition: width 0.3s ease; overflow: hidden;
         }
         .whatsapp-float span { display: none; white-space: nowrap; font-weight: bold; margin-left: 10px; }
-        .whatsapp-float:hover { width: 220px; }
+        .whatsapp-float:hover { width: 260px; }
         .whatsapp-float:hover span { display: inline; }
 
-        /* Checkout e Aviso */
+        /* Carrinho Laranja */
+        .cart-bar {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            width: 90%; max-width: 500px; background: var(--laranja); color: white;
+            padding: 15px 25px; border-radius: 25px; display: none;
+            justify-content: space-between; align-items: center; cursor: pointer; z-index: 999;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        /* Modal e Checkout */
         .checkout-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 1001; display: none; flex-direction: column; }
         .checkout-modal.active { display: flex; }
         .aviso-peso { background: #fff3cd; color: #856404; padding: 12px; border-radius: 10px; font-size: 12px; margin-bottom: 15px; border: 1px solid #ffeeba; display: none; align-items: center; gap: 8px; }
@@ -76,20 +86,29 @@
 <body>
 
 <header>
+    <div id="status-loja" class="badge-status">Verificando...</div><br>
     <h1>Hortifruti Vitória</h1>
-    <p><i class="fas fa-motorcycle"></i> Entregas no Vieiralves</p>
+    <p><i class="fas fa-motorcycle"></i> Qualidade no Vieiralves</p>
 </header>
 
 <div class="container">
     <div class="search-container">
-        <input type="text" id="busca" class="search-box" placeholder="Buscar no hortifruti..." onkeyup="filtrar()">
+        <input type="text" id="busca" class="search-box" placeholder="Pesquise por qualquer produto..." onkeyup="filtrar()">
     </div>
+
+    <div class="categories" id="filtros">
+        <button class="cat-btn active" onclick="filtrarCat('Todos', this)">🌿 Todos</button>
+        <button class="cat-btn" onclick="filtrarCat('Regional', this)">🏹 Regional</button>
+        <button class="cat-btn" onclick="filtrarCat('Frutas', this)">🍎 Frutas</button>
+        <button class="cat-btn" onclick="filtrarCat('Legumes', this)">🥦 Legumes</button>
+    </div>
+
     <div id="lista-produtos" class="grid"></div>
 </div>
 
 <a href="LINK_DO_SEU_GRUPO" class="whatsapp-float" target="_blank">
     <i class="fab fa-whatsapp" style="font-size: 30px;"></i>
-    <span>Grupo de Ofertas</span>
+    <span>Entrar no Grupo de Ofertas</span>
 </a>
 
 <div class="cart-bar" id="cart-bar" onclick="toggleModal(true)">
@@ -100,7 +119,7 @@
 <div class="checkout-modal" id="checkout-modal">
     <div style="padding: 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between;">
         <button onclick="toggleModal(false)" style="border:none; background:none; font-size: 18px;"><i class="fas fa-arrow-left"></i> Voltar</button>
-        <h2 style="margin:0;">Seu Carrinho</h2>
+        <h2 style="margin:0;">Finalizar Pedido</h2>
         <div></div>
     </div>
     <div style="padding: 20px; overflow-y: auto; flex-grow: 1;">
@@ -108,24 +127,57 @@
             <i class="fas fa-balance-scale"></i>
             <span>Itens com * estão sujeitos a pesagem final.</span>
         </div>
-        <div id="itens-carrinho"></div>
-        <div id="total-final" style="margin: 20px 0; font-weight: bold; font-size: 20px; text-align: right; color: var(--verde-escuro);"></div>
         
-        <input type="text" id="nome-cliente" placeholder="Seu Nome" style="width:100%; padding:15px; margin-bottom:10px; border-radius:10px; border:1px solid #ddd;">
-        <input type="text" id="endereco-cliente" placeholder="Endereço de Entrega" style="width:100%; padding:15px; margin-bottom:10px; border-radius:10px; border:1px solid #ddd;">
-        <button onclick="enviarWhatsApp()" style="background: var(--verde-escuro); color: white; width: 100%; padding: 18px; border: none; border-radius: 10px; font-weight: bold; cursor:pointer;">FINALIZAR PEDIDO</button>
+        <div id="itens-carrinho"></div>
+        
+        <div style="margin-top: 20px; background: #f9f9f9; padding: 15px; border-radius: 15px;">
+            <input type="text" id="nome-cliente" placeholder="Seu Nome Completo" style="width:100%; padding:15px; margin-bottom:10px; border-radius:10px; border:1px solid #ddd;">
+            
+            <select id="bairro-entrega" onchange="atualizarTotal()" style="width:100%; padding:15px; margin-bottom:10px; border-radius:10px; border:1px solid #ddd; font-size: 16px;">
+                <option value="">Selecione o Bairro para entrega</option>
+                <option value="0">Vieiralves (Entrega Grátis)</option>
+                <option value="10">Outros bairros próximos (Taxa R$ 10,00)</option>
+                <option value="A combinar">Outros locais (Taxa a combinar)</option>
+            </select>
+
+            <input type="text" id="endereco-cliente" placeholder="Rua, número e ponto de referência" style="width:100%; padding:15px; margin-bottom:10px; border-radius:10px; border:1px solid #ddd;">
+            
+            <div id="resumo-financeiro" style="margin: 15px 0; font-weight: bold; font-size: 18px; color: var(--verde-escuro); text-align: right;"></div>
+            
+            <button onclick="enviarWhatsApp()" style="background: var(--verde-escuro); color: white; width: 100%; padding: 18px; border: none; border-radius: 10px; font-weight: bold; cursor:pointer; font-size: 16px;">PEDIR PELO WHATSAPP</button>
+        </div>
     </div>
 </div>
 
 <footer>
     <p>📍 Rua Amapá, nº 19 - Conjunto Vieiralves</p>
-    <p>📸 Instagram: @hortifruti_vitoria | 📞 (92) 99449-8445</p>
+    <p>📸 @hortifruti_vitoria | 📞 (92) 99449-8445</p>
 </footer>
 
 <script>
     const URL_PLANILHA = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRfG9ACYb6dSnGeHioNdZpLL11MLm0FakxrhxMbL4ctyvRp-jAKNV7qz3zInyuaEIM7TbXAiUlo3upR/pub?gid=0&single=true&output=csv";
     let produtos = [];
     let carrinho = {};
+    let categoriaAtual = "Todos";
+    let lojaAberta = false;
+
+    function verificarHorario() {
+        const agora = new Date();
+        const horaManaus = agora.getUTCHours() - 4;
+        const horaReal = horaManaus < 0 ? horaManaus + 24 : horaManaus;
+        const statusEl = document.getElementById('status-loja');
+        
+        // Aberto das 07h às 22h
+        if (horaReal >= 7 && horaReal < 22) {
+            statusEl.innerText = "● LOJA ABERTA (07h às 22h)";
+            statusEl.className = "badge-status status-aberto";
+            lojaAberta = true;
+        } else {
+            statusEl.innerText = "● LOJA FECHADA (Abre às 07h)";
+            statusEl.className = "badge-status status-fechado";
+            lojaAberta = false;
+        }
+    }
 
     async function buscarProdutos() {
         const response = await fetch(URL_PLANILHA);
@@ -134,32 +186,51 @@
         produtos = linhas.map(linha => {
             const col = linha.split(',');
             return {
-                id: col[0],
-                nome: col[2],
+                id: col[0].trim(),
+                cat: col[1].trim(),
+                nome: col[2].trim(),
                 preco: parseFloat(col[3]),
                 pesavel: col[4].trim().toLowerCase() === 'sim',
-                img: col[5]
+                img: col[5].trim()
             };
         });
         render();
     }
 
-    function render() {
+    function filtrar() {
+        const termo = document.getElementById('busca').value.toLowerCase();
+        const filtrados = produtos.filter(p => 
+            p.nome.toLowerCase().includes(termo) && 
+            (categoriaAtual === "Todos" || p.cat === categoriaAtual)
+        );
+        
         const grid = document.getElementById('lista-produtos');
-        grid.innerHTML = produtos.map(p => `
+        grid.innerHTML = filtrados.map(p => `
             <div class="card">
                 <img src="${p.img}">
                 <div class="card-body">
-                    ${p.pesavel ? '<span class="label-peso">Item sujeito a pesagem final</span>' : ''}
+                    ${p.pesavel ? '<span class="label-peso">Item por KG</span>' : ''}
                     <h3>${p.nome}</h3>
-                    <div class="price">R$ ${p.preco.toFixed(2)}</div>
+                    <div class="price">R$ ${p.preco.toFixed(2).replace('.',',')}</div>
                     <button onclick="mudarQtd('${p.id}', 1)" style="background:var(--verde-primario); color:white; border:none; padding:10px; width:100%; border-radius:10px; font-weight:bold; cursor:pointer;">Adicionar</button>
                 </div>
             </div>`).join('');
     }
 
+    function render() { filtrar(); }
+
+    function filtrarCat(cat, btn) {
+        categoriaAtual = cat;
+        document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        filtrar();
+    }
+
     function mudarQtd(id, delta) {
-        if (!carrinho[id]) carrinho[id] = { ...produtos.find(p => p.id === id), qtd: 0 };
+        if (!carrinho[id]) {
+            const p = produtos.find(item => item.id === id);
+            carrinho[id] = { ...p, qtd: 0 };
+        }
         carrinho[id].qtd += delta;
         if (carrinho[id].qtd <= 0) delete carrinho[id];
         atualizarBarra();
@@ -170,44 +241,72 @@
         const total = Object.values(carrinho).reduce((acc, p) => acc + (p.preco * p.qtd), 0);
         document.getElementById('cart-bar').style.display = itens > 0 ? 'flex' : 'none';
         document.getElementById('cart-count').innerText = itens;
-        document.getElementById('cart-total').innerText = `R$ ${total.toFixed(2)} ➔`;
+        document.getElementById('cart-total').innerText = `R$ ${total.toFixed(2).replace('.',',')} ➔`;
     }
 
     function toggleModal(show) {
         document.getElementById('checkout-modal').classList.toggle('active', show);
         if (show) {
             let temPesavel = false;
-            const itensDiv = document.getElementById('itens-carrinho');
-            const subtotal = Object.values(carrinho).reduce((acc, p) => acc + (p.preco * p.qtd), 0);
-            
-            itensDiv.innerHTML = Object.values(carrinho).map(p => {
+            const div = document.getElementById('itens-carrinho');
+            div.innerHTML = Object.values(carrinho).map(p => {
                 if (p.pesavel) temPesavel = true;
-                return `<div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                return `<div style="display:flex; justify-content:space-between; margin-bottom:10px; border-bottom:1px solid #eee; padding-bottom:5px;">
                     <span>${p.pesavel ? '*' : ''}${p.qtd}x ${p.nome}</span>
-                    <span>R$ ${(p.preco * p.qtd).toFixed(2)}</span>
+                    <span>R$ ${(p.preco * p.qtd).toFixed(2).replace('.',',')}</span>
                 </div>`;
             }).join('');
-            
-            document.getElementById('total-final').innerText = `Total: R$ ${subtotal.toFixed(2)}`;
             document.getElementById('aviso-pesagem').style.display = temPesavel ? 'flex' : 'none';
+            atualizarTotal();
+        }
+    }
+
+    function atualizarTotal() {
+        const subtotal = Object.values(carrinho).reduce((acc, p) => acc + (p.preco * p.qtd), 0);
+        const taxa = document.getElementById('bairro-entrega').value;
+        const resumo = document.getElementById('resumo-financeiro');
+        
+        if (taxa === "") {
+            resumo.innerText = `Subtotal: R$ ${subtotal.toFixed(2).replace('.',',')}`;
+        } else if (taxa === "A combinar") {
+            resumo.innerText = `Total: R$ ${subtotal.toFixed(2).replace('.',',')} + Taxa a combinar`;
+        } else {
+            const totalFinal = subtotal + parseFloat(taxa);
+            resumo.innerText = `TOTAL: R$ ${totalFinal.toFixed(2).replace('.',',')}`;
         }
     }
 
     function enviarWhatsApp() {
+        if (!lojaAberta) return alert("Estamos fechados no momento. Retornamos às 07h!");
+        
         const nome = document.getElementById('nome-cliente').value;
-        if (!nome) return alert("Por favor, informe seu nome.");
-        let msg = `*PEDIDO - HORTIFRUTI VITÓRIA*\n\nCliente: ${nome}\n\n`;
+        const bairroSel = document.getElementById('bairro-entrega');
+        const bairroTxt = bairroSel.options[bairroSel.selectedIndex].text;
+        const endereco = document.getElementById('endereco-cliente').value;
+        const taxa = bairroSel.value;
+
+        if (!nome || !endereco || taxa === "") return alert("Preencha os dados de entrega.");
+
+        let msg = `*PEDIDO - HORTIFRUTI VITÓRIA*\n\n`;
+        msg += `👤 *Cliente:* ${nome}\n📍 *Bairro:* ${bairroTxt}\n🏠 *End:* ${endereco}\n\n*ITENS:*\n`;
+        
+        let temPesavel = false;
         Object.values(carrinho).forEach(p => {
+            if (p.pesavel) temPesavel = true;
             msg += `• ${p.qtd}x ${p.nome} ${p.pesavel ? '(*)' : ''}\n`;
         });
-        const total = Object.values(carrinho).reduce((acc, p) => acc + (p.preco * p.qtd), 0);
-        msg += `\n*TOTAL: R$ ${total.toFixed(2)}*`;
-        msg += `\n\n_(*) Itens sujeitos a pesagem final._`;
+
+        const subtotal = Object.values(carrinho).reduce((acc, p) => acc + (p.preco * p.qtd), 0);
+        const totalTxt = taxa === "A combinar" ? `${subtotal.toFixed(2)} + Taxa` : (subtotal + parseFloat(taxa)).toFixed(2);
+        
+        msg += `\n*TOTAL ESTIMADO: R$ ${totalTxt.replace('.',',')}*`;
+        if (temPesavel) msg += `\n\n_(*) Itens sujeitos a pesagem final._`;
+
         window.open(`https://wa.me/5592994498445?text=${encodeURIComponent(msg)}`);
     }
 
+    verificarHorario();
     buscarProdutos();
 </script>
 </body>
 </html>
-
