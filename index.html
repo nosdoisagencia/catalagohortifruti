@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hortifruti Vitória - Pedido Online</title>
+    <style>
+        :root {
+            --verde: #27ae60;
+            --verde-dark: #1e8449;
+            --branco: #ffffff;
+            --cinza: #f4f7f6;
+            --laranja: #f39c12;
+        }
+
+        body { font-family: 'Segoe UI', sans-serif; background: var(--cinza); margin: 0; padding-bottom: 120px; }
+        
+        header { background: var(--verde); color: white; padding: 20px; text-align: center; }
+        .container { max-width: 800px; margin: auto; padding: 15px; }
+
+        /* Botão Grupo de Ofertas */
+        .btn-grupo { 
+            display: block; background: var(--laranja); color: white; text-align: center; 
+            padding: 12px; border-radius: 8px; text-decoration: none; font-weight: bold;
+            margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        /* Busca e Filtros */
+        .search-box { width: 100%; padding: 12px; border-radius: 25px; border: 1px solid #ddd; margin-bottom: 15px; outline: none; box-sizing: border-box; }
+        .categories { display: flex; gap: 10px; overflow-x: auto; margin-bottom: 20px; padding-bottom: 5px; }
+        .cat-btn { background: white; border: 1px solid var(--verde); padding: 8px 15px; border-radius: 20px; cursor: pointer; white-space: nowrap; font-weight: bold; color: var(--verde); }
+        .cat-btn.active { background: var(--verde); color: white; }
+
+        /* Produtos */
+        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        .card { background: white; padding: 15px; border-radius: 12px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .card .emoji { font-size: 40px; display: block; margin-bottom: 10px; }
+        .price { color: var(--verde-dark); font-weight: bold; display: block; margin: 10px 0; }
+        .btn-add { background: var(--verde); color: white; border: none; padding: 8px; width: 100%; border-radius: 5px; cursor: pointer; font-weight: bold; }
+
+        /* Carrinho Flutuante */
+        .cart-footer { 
+            position: fixed; bottom: 0; left: 0; right: 0; 
+            background: var(--verde-dark); color: white; padding: 15px; 
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.2); cursor: pointer; z-index: 100;
+        }
+
+        /* Rodapé Informativo */
+        footer { background: #333; color: white; padding: 20px; text-align: center; font-size: 14px; margin-top: 40px; }
+        footer a { color: var(--verde); text-decoration: none; font-weight: bold; }
+        .contato-info { margin-top: 10px; line-height: 1.6; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Hortifruti Vitória</h1>
+    <p>Qualidade e Frescor no Vieiralves</p>
+</header>
+
+<div class="container">
+    <a href="LINK_DO_SEU_GRUPO_AQUI" class="btn-grupo" target="_blank">
+        🔥 ENTRAR NO GRUPO DE OFERTAS EXCLUSIVAS
+    </a>
+
+    <input type="text" id="busca" class="search-box" placeholder="O que você procura?" onkeyup="filtrar()">
+    
+    <div class="categories" id="filtros">
+        <button class="cat-btn active" onclick="filtrarCat('Todos', this)">Todos</button>
+        <button class="cat-btn" onclick="filtrarCat('Frutas', this)">Frutas</button>
+        <button class="cat-btn" onclick="filtrarCat('Legumes', this)">Legumes</button>
+        <button class="cat-btn" onclick="filtrarCat('Verduras', this)">Verduras</button>
+        <button class="cat-btn" onclick="filtrarCat('Bebidas', this)">Bebidas</button>
+    </div>
+
+    <div class="grid" id="lista-produtos"></div>
+</div>
+
+<div class="cart-footer" onclick="enviarWhatsApp()">
+    <span id="cart-info">🛒 0 itens</span>
+    <span id="cart-total">Total: R$ 0,00</span>
+    <strong>Finalizar Pedido ➔</strong>
+</div>
+
+<footer>
+    <div class="contato-info">
+        <strong>📍 Endereço:</strong> Rua Amapá, nº 19 - Conjunto Vieiralves<br>
+        <strong>📸 Instagram:</strong> <a href="https://instagram.com/hortifruti_vitoria" target="_blank">@hortifruti_vitoria</a><br>
+        <strong>📞 Telefone:</strong> (92) 99449-8445
+    </div>
+</footer>
+
+<script>
+    const produtos = [
+        { id: 1, nome: "Uva Vitória", preco: 12.90, cat: "Frutas", img: "🍇" },
+        { id: 2, nome: "Banana Prata", preco: 6.50, cat: "Frutas", img: "🍌" },
+        { id: 3, nome: "Batata Inglesa", preco: 6.99, cat: "Legumes", img: "🥔" },
+        { id: 4, nome: "Suco de Laranja", preco: 15.00, cat: "Bebidas", img: "🍹" },
+        { id: 5, nome: "Tomate Italiano", preco: 8.50, cat: "Legumes", img: "🍅" },
+        { id: 6, nome: "Alface Crespa", preco: 3.50, cat: "Verduras", img: "🥬" }
+    ];
+
+    let carrinho = [];
+    let categoriaAtual = "Todos";
+
+    function render(lista = produtos) {
+        const list = document.getElementById('lista-produtos');
+        list.innerHTML = lista.map(p => `
+            <div class="card">
+                <span class="emoji">${p.img}</span>
+                <h3>${p.nome}</h3>
+                <span class="price">R$ ${p.preco.toFixed(2)}</span>
+                <button class="btn-add" onclick="add(${p.id})">Adicionar</button>
+            </div>
+        `).join('');
+    }
+
+    function filtrar() {
+        const termo = document.getElementById('busca').value.toLowerCase();
+        const filtrados = produtos.filter(p => 
+            p.nome.toLowerCase().includes(termo) && 
+            (categoriaAtual === "Todos" || p.cat === categoriaAtual)
+        );
+        render(filtrados);
+    }
+
+    function filtrarCat(cat, btn) {
+        categoriaAtual = cat;
+        
+        // Atualiza visual dos botões
+        document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        
+        filtrar();
+    }
+
+    function add(id) {
+        const prod = produtos.find(p => p.id === id);
+        carrinho.push(prod);
+        atualizarCarrinho();
+    }
+
+    function atualizarCarrinho() {
+        const total = carrinho.reduce((acc, p) => acc + p.preco, 0);
+        document.getElementById('cart-info').innerText = `🛒 ${carrinho.length} itens`;
+        document.getElementById('cart-total').innerText = `Total: R$ ${total.toFixed(2)}`;
+    }
+
+    function enviarWhatsApp() {
+        if (carrinho.length === 0) return alert("Seu carrinho está vazio!");
+
+        const numeroTelefone = "5592994498445";
+        let mensagem = "*Novo Pedido - Hortifruti Vitória*\n\n";
+        
+        const resumo = carrinho.reduce((acc, curr) => {
+            acc[curr.nome] = (acc[curr.nome] || 0) + 1;
+            return acc;
+        }, {});
+
+        for (let item in resumo) {
+            mensagem += `• ${resumo[item]}x ${item}\n`;
+        }
+
+        const total = carrinho.reduce((acc, p) => acc + p.preco, 0);
+        mensagem += `\n*Total: R$ ${total.toFixed(2)}*`;
+        mensagem += `\n\n📍 *Endereço de Entrega:* Rua Amapá, nº 19 - Conjunto Vieiralves`;
+
+        const link = `https://wa.me/${numeroTelefone}?text=${encodeURIComponent(mensagem)}`;
+        window.open(link, '_blank');
+    }
+
+    render();
+</script>
+
+</body>
+</html>
