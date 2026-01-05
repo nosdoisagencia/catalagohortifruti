@@ -79,7 +79,6 @@
 
         .aviso-peso { background: #fff3cd; color: #856404; padding: 12px; border-radius: 10px; font-size: 12px; margin-bottom: 15px; border: 1px solid #ffeeba; display: none; align-items: center; gap: 8px; }
 
-        /* Botão Voltar ao Topo */
         #btn-topo {
             position: fixed; bottom: 85px; right: 20px;
             background: var(--verde-escuro); color: white; width: 45px; height: 45px;
@@ -130,6 +129,8 @@
     </div>
     
     <div style="padding: 20px; overflow-y: auto; flex-grow: 1;">
+        <div id="num-pedido-exibicao" style="font-weight: bold; color: var(--laranja); margin-bottom: 15px; font-size: 14px;"></div>
+        
         <div id="aviso-pesagem" class="aviso-peso">
             <i class="fas fa-balance-scale"></i>
             <span>Itens com * estão sujeitos a pesagem final.</span>
@@ -196,16 +197,22 @@
     let carrinho = {};
     let categoriaAtual = "Todos";
     let lojaAberta = false;
+    let numeroPedidoAtual = "";
 
-    // Mostrar/Esconder botão de topo ao scrollar
     window.onscroll = function() {
         const btn = document.getElementById("btn-topo");
         if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
             btn.style.display = "flex";
-        } else {
-            btn.style.display = "none";
-        }
+        } else { btn.style.display = "none"; }
     };
+
+    function gerarNumeroPedido() {
+        const data = new Date();
+        const dia = data.getDate().toString().padStart(2, '0');
+        const mes = (data.getMonth() + 1).toString().padStart(2, '0');
+        const random = Math.floor(1000 + Math.random() * 9000);
+        return `${dia}${mes}-${random}`;
+    }
 
     function verificarHorario() {
         const agora = new Date();
@@ -213,11 +220,9 @@
         const hora = horaManaus < 0 ? horaManaus + 24 : horaManaus;
         const dia = agora.getDay();
         const statusEl = document.getElementById('status-loja');
-        
         let aberto = false;
         if (dia >= 1 && dia <= 6) { if (hora >= 7 && hora < 22) aberto = true; }
         else { if (hora >= 7 && hora < 16) aberto = true; }
-        
         lojaAberta = aberto;
         statusEl.innerText = aberto ? "● LOJA ABERTA" : "● LOJA FECHADA";
         statusEl.className = "badge-status " + (aberto ? "status-aberto" : "status-fechado");
@@ -298,6 +303,8 @@
     function toggleModal(show) {
         document.getElementById('checkout-modal').classList.toggle('active', show);
         if (show) {
+            numeroPedidoAtual = gerarNumeroPedido();
+            document.getElementById('num-pedido-exibicao').innerText = `PEDIDO #${numeroPedidoAtual}`;
             let temPesavel = false;
             const div = document.getElementById('itens-carrinho');
             div.innerHTML = Object.values(carrinho).map(p => {
@@ -323,7 +330,7 @@
         const pag = document.getElementById('pagamento').value;
         if (!nome) return alert("Por favor, informe seu nome.");
         
-        let msg = `*PEDIDO - HORTIFRUTI VITÓRIA*\n`;
+        let msg = `*PEDIDO #${numeroPedidoAtual} - HORTIFRUTI VITÓRIA*\n`;
         msg += `👤 *Cliente:* ${nome}\n📦 *Tipo:* ${tipo}\n💳 *Pag:* ${pag}\n`;
         
         if (tipo === 'Entrega') {
