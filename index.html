@@ -23,7 +23,6 @@
         * { box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background: var(--bg-leve); margin: 0; color: var(--texto); padding-bottom: 120px; }
 
-        /* Header Modernizado */
         header { 
             background: linear-gradient(135deg, var(--verde-escuro), var(--verde-primario));
             color: white; padding: 50px 20px; text-align: center;
@@ -36,16 +35,13 @@
 
         .container { max-width: 1100px; margin: auto; padding: 0 15px; }
 
-        /* Busca */
         .search-container { position: relative; margin-top: -30px; z-index: 10; }
         .search-box { 
             width: 100%; padding: 20px 30px; border-radius: 50px; border: none;
             box-shadow: 0 10px 30px rgba(0,0,0,0.15); font-size: 16px; outline: none;
         }
 
-        /* Categorias com Scroll Suave */
         .categories { display: flex; gap: 12px; overflow-x: auto; padding: 25px 5px; scrollbar-width: none; }
-        .categories::-webkit-scrollbar { display: none; }
         .cat-btn { 
             background: var(--branco); border: none; padding: 12px 22px; border-radius: 20px; 
             cursor: pointer; font-weight: 600; white-space: nowrap; box-shadow: var(--shadow);
@@ -53,34 +49,25 @@
         }
         .cat-btn.active { background: var(--verde-escuro); color: white; transform: scale(1.05); }
 
-        /* Grid de Produtos */
         .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
         @media (min-width: 768px) { .grid { grid-template-columns: repeat(4, 1fr); gap: 25px; } }
 
-        .card { 
-            background: var(--branco); border-radius: 22px; overflow: hidden; 
-            display: flex; flex-direction: column; box-shadow: var(--shadow);
-            transition: transform 0.2s; position: relative;
-        }
-        .card:active { transform: scale(0.98); }
+        .card { background: var(--branco); border-radius: 22px; overflow: hidden; display: flex; flex-direction: column; box-shadow: var(--shadow); position: relative; }
         .card img { width: 100%; height: 160px; object-fit: cover; background: #eee; }
         .card-body { padding: 15px; flex-grow: 1; display: flex; flex-direction: column; align-items: center; }
         .card-body h3 { font-size: 15px; margin: 5px 0; text-align: center; height: 45px; overflow: hidden; }
         .price { color: var(--verde-escuro); font-weight: 700; font-size: 19px; margin: 8px 0; }
         .label-peso { font-size: 10px; color: var(--laranja); font-weight: bold; text-transform: uppercase; }
 
-        /* Controles de Quantidade */
         .qty-controls { display: flex; align-items: center; justify-content: space-between; width: 100%; background: #f8f9fa; border-radius: 12px; padding: 5px; margin-top: auto; }
         .btn-qty { background: var(--verde-primario); color: white; border: none; width: 35px; height: 35px; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 18px; }
-        .qty-num { font-weight: bold; font-size: 16px; color: var(--verde-escuro); }
 
-        /* WhatsApp e Carrinho */
         .whatsapp-float {
             position: fixed; bottom: 95px; right: 20px;
             background: #25d366; color: white; width: 60px; height: 60px;
             border-radius: 50px; display: flex; align-items: center; justify-content: center;
             box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 1000; text-decoration: none;
-            transition: width 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); overflow: hidden;
+            transition: width 0.3s ease; overflow: hidden;
         }
         .whatsapp-float span { display: none; white-space: nowrap; font-weight: bold; margin-left: 10px; }
         .whatsapp-float:hover { width: 240px; }
@@ -91,19 +78,15 @@
             width: 90%; max-width: 500px; background: var(--laranja); color: white;
             padding: 18px 25px; border-radius: 20px; display: none;
             justify-content: space-between; align-items: center; cursor: pointer; z-index: 999;
-            box-shadow: 0 10px 25px rgba(243, 156, 18, 0.4); animation: slideUp 0.4s ease;
+            box-shadow: 0 10px 25px rgba(243, 156, 18, 0.4);
         }
 
-        @keyframes slideUp { from { bottom: -100px; } to { bottom: 20px; } }
-
-        /* Checkout Moderno */
-        .checkout-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 2000; display: none; flex-direction: column; animation: fadeIn 0.3s; }
+        .checkout-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 2000; display: none; flex-direction: column; }
         .checkout-modal.active { display: flex; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        .input-group { margin-bottom: 15px; }
+        .input-group { margin-bottom: 12px; }
         .input-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 5px; color: #666; }
-        .input-field { width:100%; padding:15px; border-radius:12px; border:1px solid #ddd; font-size: 16px; background: #fdfdfd; }
+        .input-field { width:100%; padding:14px; border-radius:12px; border:1px solid #ddd; font-size: 15px; background: #fdfdfd; }
 
         footer { background: #2d3436; color: white; padding: 40px 20px; text-align: center; margin-top: 50px; border-radius: 30px 30px 0 0; }
     </style>
@@ -126,7 +109,6 @@
         <button class="cat-btn" onclick="filtrarCat('Regional', this)">🏹 Regional</button>
         <button class="cat-btn" onclick="filtrarCat('Frutas', this)">🍎 Frutas</button>
         <button class="cat-btn" onclick="filtrarCat('Legumes', this)">🥦 Legumes</button>
-        <button class="cat-btn" onclick="filtrarCat('Verduras', this)">🥗 Verduras</button>
     </div>
 
     <div id="lista-produtos" class="grid"></div>
@@ -145,41 +127,52 @@
 <div class="checkout-modal" id="checkout-modal">
     <div style="padding: 20px; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 15px;">
         <button onclick="toggleModal(false)" style="border:none; background:#eee; padding:10px 15px; border-radius:10px; cursor:pointer;"><i class="fas fa-chevron-left"></i></button>
-        <h2 style="margin:0; font-size: 20px;">Revisão do Pedido</h2>
+        <h2 style="margin:0; font-size: 20px;">Finalizar Pedido</h2>
     </div>
     
     <div style="padding: 20px; overflow-y: auto; flex-grow: 1;">
-        <div id="aviso-pesagem" class="aviso-peso" style="display:none; background: #fff3cd; color: #856404; padding: 15px; border-radius: 12px; font-size: 13px; margin-bottom: 20px;">
-            <i class="fas fa-balance-scale"></i> Itens marcados com <b>*</b> são vendidos por peso. O valor final pode variar levemente após a pesagem.
-        </div>
-        
-        <div id="itens-carrinho" style="margin-bottom: 30px;"></div>
+        <div id="itens-carrinho" style="margin-bottom: 20px;"></div>
         
         <div class="input-group">
-            <label>Seu Nome</label>
-            <input type="text" id="nome-cliente" class="input-field" placeholder="Ex: Maria Silva">
+            <label>Nome Completo</label>
+            <input type="text" id="nome-cliente" class="input-field" placeholder="Como te chamamos?">
         </div>
 
         <div class="input-group">
-            <label>Local de Entrega</label>
-            <select id="bairro-entrega" class="input-field" onchange="atualizarTotal()">
-                <option value="">Selecione o Bairro</option>
-                <option value="0">Vieiralves (Grátis)</option>
-                <option value="10">Nossa Sra das Graças (R$ 10,00)</option>
-                <option value="12">Adrianópolis (R$ 12,00)</option>
-                <option value="A combinar">Outros Bairros (A combinar)</option>
+            <label>Tipo de Pedido</label>
+            <select id="tipo-pedido" class="input-field" onchange="toggleEntrega()">
+                <option value="Entrega">Receber em Casa (Entrega)</option>
+                <option value="Retirada">Retirar na Loja</option>
             </select>
         </div>
 
-        <div class="input-group">
-            <label>Endereço Completo</label>
-            <input type="text" id="endereco-cliente" class="input-field" placeholder="Rua, número, apto e referência">
+        <div id="campos-entrega">
+            <div class="input-group">
+                <label>Bairro</label>
+                <select id="bairro-entrega" class="input-field">
+                    <option value="0">Vieiralves (Entrega Grátis)</option>
+                    <option value="A combinar">Outro bairro (Taxa a combinar)</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Endereço e Referência</label>
+                <input type="text" id="endereco-cliente" class="input-field" placeholder="Rua, número e apto">
+            </div>
         </div>
 
-        <div id="resumo-financeiro" style="margin: 25px 0; padding: 20px; background: #f8f9fa; border-radius: 15px; text-align: right;"></div>
+        <div class="input-group">
+            <label>Forma de Pagamento</label>
+            <select id="pagamento" class="input-field">
+                <option value="Pix">Pix (Receber chave no WhatsApp)</option>
+                <option value="Cartão">Cartão (Na entrega/retirada)</option>
+                <option value="Dinheiro">Dinheiro</option>
+            </select>
+        </div>
+
+        <div id="resumo-financeiro" style="margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 12px; text-align: right;"></div>
         
-        <button onclick="enviarWhatsApp()" style="background: #25d366; color: white; width: 100%; padding: 20px; border: none; border-radius: 15px; font-weight: 700; cursor:pointer; font-size: 18px; box-shadow: 0 5px 15px rgba(37, 211, 102, 0.3);">
-            <i class="fab fa-whatsapp"></i> ENVIAR PEDIDO AGORA
+        <button onclick="enviarWhatsApp()" style="background: #25d366; color: white; width: 100%; padding: 20px; border: none; border-radius: 15px; font-weight: 700; cursor:pointer; font-size: 18px;">
+            <i class="fab fa-whatsapp"></i> ENVIAR PEDIDO
         </button>
     </div>
 </div>
@@ -187,10 +180,7 @@
 <footer>
     <p><b>Hortifruti Vitória</b></p>
     <p>📍 Rua Amapá, nº 19 - Vieiralves</p>
-    <p>Horário: Seg a Sáb: 07h às 20h | Dom: 07h às 13h</p>
-    <div style="margin-top: 15px; font-size: 20px;">
-        <i class="fab fa-instagram"></i> @hortifruti_vitoria
-    </div>
+    <p>Seg a Sáb: 07h às 22h | Dom: 07h às 16h</p>
 </footer>
 
 <script>
@@ -204,170 +194,138 @@
         const agora = new Date();
         const horaManaus = agora.getUTCHours() - 4;
         const hora = horaManaus < 0 ? horaManaus + 24 : horaManaus;
-        const dia = agora.getDay(); // 0 = Domingo
+        const dia = agora.getDay();
         const statusEl = document.getElementById('status-loja');
         
-        // Regra simples: Seg-Sáb 7h-20h, Dom 7h-13h
-        let limiteH = (dia === 0) ? 13 : 20;
-        
-        if (hora >= 7 && hora < limiteH) {
-            statusEl.innerText = "● LOJA ABERTA";
-            statusEl.className = "badge-status status-aberto";
-            lojaAberta = true;
-        } else {
-            statusEl.innerText = "● LOJA FECHADA";
-            statusEl.className = "badge-status status-fechado";
-            lojaAberta = false;
+        let aberto = false;
+        if (dia >= 1 && dia <= 6) { // Seg a Sáb
+            if (hora >= 7 && hora < 22) aberto = true;
+        } else { // Domingo
+            if (hora >= 7 && hora < 16) aberto = true;
         }
+        
+        lojaAberta = aberto;
+        statusEl.innerText = aberto ? "● LOJA ABERTA" : "● LOJA FECHADA";
+        statusEl.className = "badge-status " + (aberto ? "status-aberto" : "status-fechado");
     }
 
     async function buscarProdutos() {
-        try {
-            const response = await fetch(URL_PLANILHA);
-            const data = await response.text();
-            const linhas = data.split('\n').slice(1);
-            produtos = linhas.map(linha => {
-                const col = linha.split(',');
-                if(col.length < 4) return null;
-                return {
-                    id: col[0].trim(),
-                    cat: col[1].trim(),
-                    nome: col[2].trim(),
-                    preco: parseFloat(col[3]),
-                    pesavel: col[4] ? col[4].trim().toLowerCase() === 'sim' : false,
-                    img: col[5] ? col[5].trim() : ''
-                };
-            }).filter(p => p !== null);
-            render();
-        } catch (e) { console.error("Erro ao carregar dados"); }
+        const response = await fetch(URL_PLANILHA);
+        const data = await response.text();
+        const linhas = data.split('\n').slice(1);
+        produtos = linhas.map(linha => {
+            const col = linha.split(',');
+            return {
+                id: col[0].trim(),
+                cat: col[1].trim(),
+                nome: col[2].trim(),
+                preco: parseFloat(col[3]),
+                pesavel: col[4]?.trim().toLowerCase() === 'sim',
+                img: col[5]?.trim()
+            };
+        });
+        render();
     }
 
-    function mudarQtd(id, delta) {
-        if (!carrinho[id]) {
-            const p = produtos.find(item => item.id === id);
-            carrinho[id] = { ...p, qtd: 0 };
-        }
-        carrinho[id].qtd += delta;
-        if (carrinho[id].qtd <= 0) delete carrinho[id];
-        
-        atualizarBarra();
-        filtrar(); // Re-renderiza para atualizar números nos cards
-    }
-
-    function filtrar() {
+    function render() {
         const termo = document.getElementById('busca').value.toLowerCase();
-        const filtrados = produtos.filter(p => 
-            p.nome.toLowerCase().includes(termo) && 
-            (categoriaAtual === "Todos" || p.cat === categoriaAtual)
-        );
-        
+        const filtrados = produtos.filter(p => p.nome.toLowerCase().includes(termo) && (categoriaAtual === "Todos" || p.cat === categoriaAtual));
         const grid = document.getElementById('lista-produtos');
         grid.innerHTML = filtrados.map(p => {
-            const qtdNoCarrinho = carrinho[p.id] ? carrinho[p.id].qtd : 0;
-            return `
-            <div class="card">
+            const qtd = carrinho[p.id] ? carrinho[p.id].qtd : 0;
+            return `<div class="card">
                 <img src="${p.img}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/1617/1617554.png'">
                 <div class="card-body">
-                    ${p.pesavel ? '<span class="label-peso">Kg / Unidade</span>' : '<span class="label-peso">Unidade</span>'}
+                    <span class="label-peso">${p.pesavel ? 'Item por KG' : 'Unidade'}</span>
                     <h3>${p.nome}</h3>
                     <div class="price">R$ ${p.preco.toFixed(2).replace('.',',')}</div>
-                    
-                    ${qtdNoCarrinho === 0 ? 
+                    ${qtd === 0 ? 
                         `<button onclick="mudarQtd('${p.id}', 1)" style="background:var(--verde-primario); color:white; border:none; padding:12px; width:100%; border-radius:12px; font-weight:bold; cursor:pointer;">Adicionar</button>` :
                         `<div class="qty-controls">
                             <button class="btn-qty" onclick="mudarQtd('${p.id}', -1)">-</button>
-                            <span class="qty-num">${qtdNoCarrinho}</span>
+                            <span style="font-weight:bold">${qtd}</span>
                             <button class="btn-qty" onclick="mudarQtd('${p.id}', 1)">+</button>
-                        </div>`
-                    }
+                        </div>`}
                 </div>
             </div>`;
         }).join('');
     }
 
-    function render() { filtrar(); }
+    function mudarQtd(id, delta) {
+        if (!carrinho[id]) carrinho[id] = { ...produtos.find(p => p.id === id), qtd: 0 };
+        carrinho[id].qtd += delta;
+        if (carrinho[id].qtd <= 0) delete carrinho[id];
+        atualizarBarra();
+        render();
+    }
 
     function filtrarCat(cat, btn) {
         categoriaAtual = cat;
         document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        filtrar();
+        render();
     }
+
+    function filtrar() { render(); }
 
     function atualizarBarra() {
         const itens = Object.values(carrinho).reduce((acc, p) => acc + p.qtd, 0);
         const total = Object.values(carrinho).reduce((acc, p) => acc + (p.preco * p.qtd), 0);
-        const bar = document.getElementById('cart-bar');
-        bar.style.display = itens > 0 ? 'flex' : 'none';
+        document.getElementById('cart-bar').style.display = itens > 0 ? 'flex' : 'none';
         document.getElementById('cart-count').innerText = itens;
         document.getElementById('cart-total').innerText = `R$ ${total.toFixed(2).replace('.',',')} ➔`;
+    }
+
+    function toggleEntrega() {
+        const tipo = document.getElementById('tipo-pedido').value;
+        document.getElementById('campos-entrega').style.display = tipo === 'Entrega' ? 'block' : 'none';
+        atualizarTotal();
     }
 
     function toggleModal(show) {
         document.getElementById('checkout-modal').classList.toggle('active', show);
         if (show) {
-            let temPesavel = false;
             const div = document.getElementById('itens-carrinho');
-            div.innerHTML = Object.values(carrinho).map(p => {
-                if (p.pesavel) temPesavel = true;
-                return `<div style="display:flex; justify-content:space-between; margin-bottom:12px; font-size:15px;">
-                    <span><b>${p.qtd}x</b> ${p.nome}${p.pesavel ? '*' : ''}</span>
-                    <span>R$ ${(p.preco * p.qtd).toFixed(2).replace('.',',')}</span>
-                </div>`;
-            }).join('');
-            document.getElementById('aviso-pesagem').style.display = temPesavel ? 'block' : 'none';
+            div.innerHTML = Object.values(carrinho).map(p => `<div style="display:flex; justify-content:space-between; margin-bottom:8px"><span>${p.qtd}x ${p.nome}</span><span>R$ ${(p.preco * p.qtd).toFixed(2).replace('.',',')}</span></div>`).join('');
             atualizarTotal();
         }
     }
 
     function atualizarTotal() {
         const subtotal = Object.values(carrinho).reduce((acc, p) => acc + (p.preco * p.qtd), 0);
-        const taxaVal = document.getElementById('bairro-entrega').value;
-        const resumo = document.getElementById('resumo-financeiro');
-        
-        let taxaTxt = "";
-        let totalFinal = subtotal;
-
-        if (taxaVal === "A combinar") {
-            taxaTxt = "<br><small>+ Taxa a combinar</small>";
-        } else if (taxaVal !== "") {
-            totalFinal += parseFloat(taxaVal);
-            taxaTxt = `<br><small>+ Entrega: R$ ${parseFloat(taxaVal).toFixed(2).replace('.',',')}</small>`;
-        }
-
-        resumo.innerHTML = `<span style="font-size:14px; color:#666;">Subtotal: R$ ${subtotal.toFixed(2).replace('.',',')}</span>${taxaTxt}<br><b style="font-size:22px; color:var(--verde-escuro);">Total: R$ ${totalFinal.toFixed(2).replace('.',',')}</b>`;
+        document.getElementById('resumo-financeiro').innerHTML = `<b style="font-size:20px; color:var(--verde-escuro);">Total: R$ ${subtotal.toFixed(2).replace('.',',')}</b>`;
     }
 
     function enviarWhatsApp() {
-        if (!lojaAberta) {
-             if(!confirm("Estamos fora do horário de atendimento. Seu pedido pode não ser visualizado agora. Deseja continuar?")) return;
-        }
+        if (!lojaAberta) alert("Estamos fechados no momento, mas você pode enviar seu pedido para processarmos na abertura!");
         
         const nome = document.getElementById('nome-cliente').value;
-        const bairroSel = document.getElementById('bairro-entrega');
-        const bairroTxt = bairroSel.options[bairroSel.selectedIndex].text;
-        const endereco = document.getElementById('endereco-cliente').value;
-        const taxa = bairroSel.value;
-
-        if (!nome || !endereco || taxa === "") return alert("Por favor, preencha todos os dados de entrega.");
-
-        let msg = `*NOVO PEDIDO - HORTIFRUTI VITÓRIA*\n`;
-        msg += `--------------------------------\n`;
+        const tipo = document.getElementById('tipo-pedido').value;
+        const pag = document.getElementById('pagamento').value;
+        
+        if (!nome) return alert("Por favor, informe seu nome.");
+        
+        let msg = `*PEDIDO - HORTIFRUTI VITÓRIA*\n`;
         msg += `👤 *Cliente:* ${nome}\n`;
-        msg += `📍 *Bairro:* ${bairroTxt}\n`;
-        msg += `🏠 *Endereço:* ${endereco}\n`;
-        msg += `--------------------------------\n\n`;
-        msg += `*ITENS DO PEDIDO:*\n`;
+        msg += `📦 *Tipo:* ${tipo}\n`;
+        msg += `💳 *Pagamento:* ${pag}\n`;
         
-        Object.values(carrinho).forEach(p => {
-            msg += `• ${p.qtd}x ${p.nome} ${p.pesavel ? '(*)' : ''}\n`;
-        });
+        if (tipo === 'Entrega') {
+            const bairro = document.getElementById('bairro-entrega').value === '0' ? 'Vieiralves' : 'Outro (A combinar)';
+            const end = document.getElementById('endereco-cliente').value;
+            if(!end) return alert("Informe o endereço de entrega.");
+            msg += `📍 *Bairro:* ${bairro}\n🏠 *End:* ${end}\n`;
+        }
 
-        const subtotal = Object.values(carrinho).reduce((acc, p) => acc + (p.preco * p.qtd), 0);
-        const totalTxt = taxa === "A combinar" ? `${subtotal.toFixed(2)} + Taxa` : (subtotal + parseFloat(taxa)).toFixed(2);
+        msg += `\n*ITENS:*\n`;
+        Object.values(carrinho).forEach(p => msg += `• ${p.qtd}x ${p.nome}\n`);
         
-        msg += `\n💰 *TOTAL ESTIMADO: R$ ${totalTxt.replace('.',',')}*`;
-        msg += `\n\n_(*) Itens sujeitos a pequena variação no peso final._`;
+        const total = Object.values(carrinho).reduce((acc, p) => acc + (p.preco * p.qtd), 0);
+        msg += `\n💰 *VALOR TOTAL: R$ ${total.toFixed(2).replace('.',',')}*`;
+        
+        if (pag === 'Pix') {
+            msg += `\n\n⚠️ *PAGAMENTO PIX:* Por favor, envie a chave PIX para eu realizar o pagamento.`;
+        }
 
         window.open(`https://wa.me/5592994498445?text=${encodeURIComponent(msg)}`);
     }
