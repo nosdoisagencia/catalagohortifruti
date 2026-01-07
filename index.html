@@ -41,7 +41,7 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.15); font-size: 16px; outline: none;
         }
 
-        .categories { display: flex; gap: 12px; overflow-x: auto; padding: 25px 5px; scrollbar-width: none; }
+        .categories { display: flex; gap: 12px; overflow-x: auto; padding: 25px 5px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
         .cat-btn { 
             background: var(--branco); border: none; padding: 12px 22px; border-radius: 20px; 
             cursor: pointer; font-weight: 600; white-space: nowrap; box-shadow: var(--shadow);
@@ -106,14 +106,14 @@
 
     <div class="categories" id="filtros">
         <button class="cat-btn active" onclick="filtrarCat('Todos', this)">🌿 Todos</button>
+        <button class="cat-btn" onclick="filtrarCat('Ofertas', this)">🔥 Ofertas</button>
         <button class="cat-btn" onclick="filtrarCat('Frutas', this)">🍎 Frutas</button>
         <button class="cat-btn" onclick="filtrarCat('Legumes', this)">🥦 Legumes</button>
         <button class="cat-btn" onclick="filtrarCat('Regional', this)">🏹 Regional</button>
         <button class="cat-btn" onclick="filtrarCat('Padaria', this)">🥖 Padaria</button>
         <button class="cat-btn" onclick="filtrarCat('Bebidas', this)">🥤 Bebidas</button>
-        <button class="cat-btn" onclick="filtrarCat('Polpas', this)">🧊 Polpas</button>
-        <button class="cat-btn" onclick="filtrarCat('Sucos', this)">🍹 Sucos</button>
-        <button class="cat-btn" onclick="filtrarCat('Frutas Cortadas', this)">🔪 Cortados</button>
+        <button class="cat-btn" onclick="filtrarCat('Sucos & Polpas', this)">🍹 Sucos & Polpas</button>
+        <button class="cat-btn" onclick="filtrarCat('Praticidade', this)">🔪 Praticidade</button>
     </div>
 
     <div id="lista-produtos" class="grid"></div>
@@ -192,7 +192,6 @@
     <p>Seg a Sáb: 07h às 22h | Dom: 07h às 16h</p>
     <hr style="opacity: 0.1; margin: 20px 0;">
     <p>📸 Siga-nos também no instagram: <a href="https://instagram.com/hortifruti_vitoria" target="_blank">@hortifruti_vitoria</a></p>
-    <p>🚀 Receba ofertas exclusivas diariamente: <a href="SEU_LINK_AQUI" target="_blank">Clique aqui</a></p>
 </footer>
 
 <script>
@@ -200,7 +199,6 @@
     let produtos = [];
     let carrinho = {};
     let categoriaAtual = "Todos";
-    let lojaAberta = false;
     let numeroPedidoAtual = "";
 
     window.onscroll = function() {
@@ -227,7 +225,6 @@
         let aberto = false;
         if (dia >= 1 && dia <= 6) { if (hora >= 7 && hora < 22) aberto = true; }
         else { if (hora >= 7 && hora < 16) aberto = true; }
-        lojaAberta = aberto;
         statusEl.innerText = aberto ? "● LOJA ABERTA" : "● LOJA FECHADA";
         statusEl.className = "badge-status " + (aberto ? "status-aberto" : "status-fechado");
     }
@@ -239,13 +236,21 @@
             const linhas = data.split('\n').slice(1);
             produtos = linhas.map(linha => {
                 const col = linha.split(',');
+                const preco = parseFloat(col[3]);
+                const cat = col[1]?.trim();
+                const nome = col[2]?.trim();
+                
+                // Lógica de Ofertas Automáticas: Preços baixos ou categoria específica
+                let eOferta = (cat === 'Ofertas' || preco < 6.00 || nome.toLowerCase().includes('saca') || nome.toLowerCase().includes('promo'));
+
                 return {
                     id: col[0]?.trim(),
-                    cat: col[1]?.trim(),
-                    nome: col[2]?.trim(),
-                    preco: parseFloat(col[3]),
+                    cat: cat,
+                    nome: nome,
+                    preco: preco,
                     pesavel: col[4]?.trim().toLowerCase() === 'sim',
-                    img: col[5]?.trim()
+                    img: col[5]?.trim(),
+                    oferta: eOferta
                 };
             }).filter(p => p.nome);
             render();
@@ -254,8 +259,20 @@
 
     function render() {
         const termo = document.getElementById('busca').value.toLowerCase();
-        const filtrados = produtos.filter(p => p.nome.toLowerCase().includes(termo) && (categoriaAtual === "Todos" || p.cat === categoriaAtual));
         const grid = document.getElementById('lista-produtos');
+        
+        const filtrados = produtos.filter(p => {
+            const matchesSearch = p.nome.toLowerCase().includes(termo);
+            if (categoriaAtual === "Todos") return matchesSearch;
+            if (categoriaAtual === "Ofertas") return matchesSearch && p.oferta;
+            
+            // Agrupamentos solicitados
+            if (categoriaAtual === "Sucos & Polpas") return matchesSearch && (p.cat === "Sucos" || p.cat === "Polpas");
+            if (categoriaAtual === "Praticidade") return matchesSearch && p.cat === "Frutas Cortadas";
+            
+            return matchesSearch && p.cat === categoriaAtual;
+        });
+
         grid.innerHTML = filtrados.map(p => {
             const qtd = carrinho[p.id] ? carrinho[p.id].qtd : 0;
             return `<div class="card">
@@ -357,7 +374,6 @@
         
         const total = Object.values(carrinho).reduce((acc, p) => acc + (p.preco * p.qtd), 0);
         msg += `\n💰 *VALOR TOTAL: R$ ${total.toFixed(2).replace('.',',')}*`;
-        if (pag === 'Pix') msg += `\n\n⚠️ *PIX:* Aguardando envio da chave...`;
         if (temPesavel) msg += `\n\n_(*) Sujeito a pesagem final._`;
 
         window.open(`https://wa.me/5592994498445?text=${encodeURIComponent(msg)}`);
