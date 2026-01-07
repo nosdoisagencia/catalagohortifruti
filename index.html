@@ -55,8 +55,8 @@
         .card { background: var(--branco); border-radius: 22px; overflow: hidden; display: flex; flex-direction: column; box-shadow: var(--shadow); position: relative; }
         .card img { width: 100%; height: 160px; object-fit: cover; background: #eee; }
         .card-body { padding: 15px; flex-grow: 1; display: flex; flex-direction: column; align-items: center; }
-        .card-body h3 { font-size: 15px; margin: 5px 0; text-align: center; height: 45px; overflow: hidden; }
-        .price { color: var(--verde-escuro); font-weight: 700; font-size: 19px; margin: 8px 0; }
+        .card-body h3 { font-size: 14px; margin: 5px 0; text-align: center; height: 40px; overflow: hidden; line-height: 1.3; }
+        .price { color: var(--verde-escuro); font-weight: 700; font-size: 18px; margin: 8px 0; }
         .label-peso { font-size: 10px; color: var(--laranja); font-weight: bold; text-transform: uppercase; }
 
         .qty-controls { display: flex; align-items: center; justify-content: space-between; width: 100%; background: #f8f9fa; border-radius: 12px; padding: 5px; margin-top: auto; }
@@ -70,6 +70,14 @@
             box-shadow: 0 10px 25px rgba(243, 156, 18, 0.4);
         }
 
+        #btn-topo {
+            position: fixed; bottom: 85px; right: 20px;
+            background: var(--verde-escuro); color: white; width: 45px; height: 45px;
+            border-radius: 50%; border: none; cursor: pointer; display: none;
+            align-items: center; justify-content: center; z-index: 998;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: 0.3s;
+        }
+
         .checkout-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 2000; display: none; flex-direction: column; }
         .checkout-modal.active { display: flex; }
 
@@ -78,15 +86,6 @@
         .input-field { width:100%; padding:14px; border-radius:12px; border:1px solid #ddd; font-size: 15px; background: #fdfdfd; }
 
         .aviso-peso { background: #fff3cd; color: #856404; padding: 12px; border-radius: 10px; font-size: 12px; margin-bottom: 15px; border: 1px solid #ffeeba; display: none; align-items: center; gap: 8px; }
-
-        #btn-topo {
-            position: fixed; bottom: 85px; right: 20px;
-            background: var(--verde-escuro); color: white; width: 45px; height: 45px;
-            border-radius: 50%; border: none; cursor: pointer; display: none;
-            align-items: center; justify-content: center; z-index: 998;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: 0.3s;
-        }
-        #btn-topo:hover { background: var(--verde-primario); transform: translateY(-3px); }
 
         footer { background: #2d3436; color: white; padding: 40px 20px; text-align: center; margin-top: 50px; border-radius: 30px 30px 0 0; }
         footer a { color: var(--verde-primario); text-decoration: none; font-weight: bold; }
@@ -107,9 +106,14 @@
 
     <div class="categories" id="filtros">
         <button class="cat-btn active" onclick="filtrarCat('Todos', this)">🌿 Todos</button>
-        <button class="cat-btn" onclick="filtrarCat('Regional', this)">🏹 Regional</button>
         <button class="cat-btn" onclick="filtrarCat('Frutas', this)">🍎 Frutas</button>
         <button class="cat-btn" onclick="filtrarCat('Legumes', this)">🥦 Legumes</button>
+        <button class="cat-btn" onclick="filtrarCat('Regional', this)">🏹 Regional</button>
+        <button class="cat-btn" onclick="filtrarCat('Padaria', this)">🥖 Padaria</button>
+        <button class="cat-btn" onclick="filtrarCat('Bebidas', this)">🥤 Bebidas</button>
+        <button class="cat-btn" onclick="filtrarCat('Polpas', this)">🧊 Polpas</button>
+        <button class="cat-btn" onclick="filtrarCat('Sucos', this)">🍹 Sucos</button>
+        <button class="cat-btn" onclick="filtrarCat('Frutas Cortadas', this)">🔪 Cortados</button>
     </div>
 
     <div id="lista-produtos" class="grid"></div>
@@ -188,7 +192,7 @@
     <p>Seg a Sáb: 07h às 22h | Dom: 07h às 16h</p>
     <hr style="opacity: 0.1; margin: 20px 0;">
     <p>📸 Siga-nos também no instagram: <a href="https://instagram.com/hortifruti_vitoria" target="_blank">@hortifruti_vitoria</a></p>
-    <p>🚀 Receba ofertas exclusivas diariamente: <a href="LINK_DO_SEU_GRUPO_WHATSAPP" target="_blank">Clique aqui</a></p>
+    <p>🚀 Receba ofertas exclusivas diariamente: <a href="SEU_LINK_AQUI" target="_blank">Clique aqui</a></p>
 </footer>
 
 <script>
@@ -229,21 +233,23 @@
     }
 
     async function buscarProdutos() {
-        const response = await fetch(URL_PLANILHA);
-        const data = await response.text();
-        const linhas = data.split('\n').slice(1);
-        produtos = linhas.map(linha => {
-            const col = linha.split(',');
-            return {
-                id: col[0].trim(),
-                cat: col[1].trim(),
-                nome: col[2].trim(),
-                preco: parseFloat(col[3]),
-                pesavel: col[4]?.trim().toLowerCase() === 'sim',
-                img: col[5]?.trim()
-            };
-        });
-        render();
+        try {
+            const response = await fetch(URL_PLANILHA);
+            const data = await response.text();
+            const linhas = data.split('\n').slice(1);
+            produtos = linhas.map(linha => {
+                const col = linha.split(',');
+                return {
+                    id: col[0]?.trim(),
+                    cat: col[1]?.trim(),
+                    nome: col[2]?.trim(),
+                    preco: parseFloat(col[3]),
+                    pesavel: col[4]?.trim().toLowerCase() === 'sim',
+                    img: col[5]?.trim()
+                };
+            }).filter(p => p.nome);
+            render();
+        } catch (e) { console.error("Erro ao carregar planilha"); }
     }
 
     function render() {
@@ -271,7 +277,10 @@
     }
 
     function mudarQtd(id, delta) {
-        if (!carrinho[id]) carrinho[id] = { ...produtos.find(p => p.id === id), qtd: 0 };
+        if (!carrinho[id]) {
+            const p = produtos.find(prod => prod.id === id);
+            carrinho[id] = { ...p, qtd: 0 };
+        }
         carrinho[id].qtd += delta;
         if (carrinho[id].qtd <= 0) delete carrinho[id];
         atualizarBarra();
