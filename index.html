@@ -240,7 +240,6 @@
                 const cat = col[1]?.trim();
                 const nome = col[2]?.trim();
                 
-                // Lógica de Ofertas Automáticas: Preços baixos ou categoria específica
                 let eOferta = (cat === 'Ofertas' || preco < 6.00 || nome.toLowerCase().includes('saca') || nome.toLowerCase().includes('promo'));
 
                 return {
@@ -265,11 +264,8 @@
             const matchesSearch = p.nome.toLowerCase().includes(termo);
             if (categoriaAtual === "Todos") return matchesSearch;
             if (categoriaAtual === "Ofertas") return matchesSearch && p.oferta;
-            
-            // Agrupamentos solicitados
             if (categoriaAtual === "Sucos & Polpas") return matchesSearch && (p.cat === "Sucos" || p.cat === "Polpas");
             if (categoriaAtual === "Praticidade") return matchesSearch && p.cat === "Frutas Cortadas";
-            
             return matchesSearch && p.cat === categoriaAtual;
         });
 
@@ -282,11 +278,16 @@
                     <h3>${p.nome}</h3>
                     <div class="price">R$ ${p.preco.toFixed(2).replace('.',',')}</div>
                     ${qtd === 0 ? 
-                        `<button onclick="mudarQtd('${p.id}', 1)" style="background:var(--verde-primario); color:white; border:none; padding:12px; width:100%; border-radius:12px; font-weight:bold; cursor:pointer;">Adicionar</button>` :
+                        `<button onclick="mudarQtd('${p.id}', ${p.pesavel ? 1 : 1})" style="background:var(--verde-primario); color:white; border:none; padding:12px; width:100%; border-radius:12px; font-weight:bold; cursor:pointer;">Adicionar</button>` :
                         `<div class="qty-controls">
-                            <button class="btn-qty" onclick="mudarQtd('${p.id}', -1)">-</button>
-                            <span style="font-weight:bold">${qtd}</span>
-                            <button class="btn-qty" onclick="mudarQtd('${p.id}', 1)">+</button>
+                            <button class="btn-qty" onclick="mudarQtd('${p.id}', ${p.pesavel ? -0.1 : -1})">-</button>
+                            ${p.pesavel ? 
+                                `<input type="number" step="0.1" value="${qtd}" 
+                                    style="width:60px; text-align:center; border:none; background:transparent; font-weight:bold; font-size:16px;"
+                                    onchange="ajustarPesoDireto('${p.id}', this.value)">` : 
+                                `<span style="font-weight:bold">${qtd}</span>`
+                            }
+                            <button class="btn-qty" onclick="mudarQtd('${p.id}', ${p.pesavel ? 0.1 : 1})">+</button>
                         </div>`}
                 </div>
             </div>`;
@@ -299,7 +300,22 @@
             carrinho[id] = { ...p, qtd: 0 };
         }
         carrinho[id].qtd += delta;
-        if (carrinho[id].qtd <= 0) delete carrinho[id];
+        if (carrinho[id].qtd <= 0) {
+            delete carrinho[id];
+        } else {
+            carrinho[id].qtd = Math.round(carrinho[id].qtd * 100) / 100;
+        }
+        atualizarBarra();
+        render();
+    }
+
+    function ajustarPesoDireto(id, valor) {
+        let num = parseFloat(valor.replace(',', '.'));
+        if (isNaN(num) || num <= 0) {
+            delete carrinho[id];
+        } else {
+            carrinho[id].qtd = Math.round(num * 100) / 100;
+        }
         atualizarBarra();
         render();
     }
@@ -314,8 +330,8 @@
     function filtrar() { render(); }
 
     function atualizarBarra() {
-        const itens = Object.values(carrinho).reduce((acc, p) => acc + p.qtd, 0);
         const total = Object.values(carrinho).reduce((acc, p) => acc + (p.preco * p.qtd), 0);
+        const itens = Object.values(carrinho).length;
         document.getElementById('cart-bar').style.display = itens > 0 ? 'flex' : 'none';
         document.getElementById('cart-count').innerText = itens;
         document.getElementById('cart-total').innerText = `R$ ${total.toFixed(2).replace('.',',')} ➔`;
@@ -336,7 +352,7 @@
             div.innerHTML = Object.values(carrinho).map(p => {
                 if (p.pesavel) temPesavel = true;
                 return `<div style="display:flex; justify-content:space-between; margin-bottom:8px">
-                    <span>${p.pesavel ? '*' : ''}${p.qtd}x ${p.nome}</span>
+                    <span>${p.pesavel ? '*' : ''}${p.qtd.toString().replace('.',',')}${p.pesavel ? 'kg' : 'x'} ${p.nome}</span>
                     <span>R$ ${(p.preco * p.qtd).toFixed(2).replace('.',',')}</span>
                 </div>`;
             }).join('');
@@ -369,12 +385,12 @@
         let temPesavel = false;
         Object.values(carrinho).forEach(p => {
             if(p.pesavel) temPesavel = true;
-            msg += `• ${p.qtd}x ${p.nome} ${p.pesavel ? '(*)' : ''}\n`;
+            msg += `• ${p.nome}: ${p.qtd.toString().replace('.',',')}${p.pesavel ? 'kg' : ' un'} ${p.pesavel ? '(*)' : ''}\n`;
         });
         
         const total = Object.values(carrinho).reduce((acc, p) => acc + (p.preco * p.qtd), 0);
         msg += `\n💰 *VALOR TOTAL: R$ ${total.toFixed(2).replace('.',',')}*`;
-        if (temPesavel) msg += `\n\n_(*) Sujeito a pesagem final._`;
+        if (temPesavel) msg += `\n\n_(*) Sujeito a pesagem final na loja._`;
 
         window.open(`https://wa.me/5592994498445?text=${encodeURIComponent(msg)}`);
     }
