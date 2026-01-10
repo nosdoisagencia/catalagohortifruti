@@ -409,7 +409,7 @@
         
         const total = Object.values(carrinho).reduce((acc, p) => acc + (p.preco * p.qtd), 0);
         msg += `\n💰 *VALOR TOTAL: R$ ${total.toFixed(2).replace('.',',')}*`;
-        if (temPesavel) msg += `\n\n_(*) Sujeito a pesagem final na loja._`;
+        if (temPesavel) msg += `\n\n_ Itens com (*) estão sujeitos a pesagem final na loja e alteração do valor._`;
 
         window.open(`https://wa.me/5592933009360?text=${encodeURIComponent(msg)}`);
     }
@@ -419,4 +419,5 @@
 </script>
 </body>
 </html>
+
 
