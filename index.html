@@ -256,6 +256,19 @@
         } catch (e) { console.error("Erro ao carregar planilha"); }
     }
 
+    // Função para definir o peso inicial de cada tipo de produto
+    function obterPesoInicial(produto) {
+        const nome = produto.nome.toLowerCase();
+        // Melancia inteira geralmente pesa muito
+        if (nome.includes('melancia') && !nome.includes('fatia')) return 5.0; 
+        // Abóbora ou Mamão podem começar com mais
+        if (nome.includes('abóbora') || nome.includes('jerimum')) return 1.5;
+        // Itens pequenos ou caros começam com menos
+        if (nome.includes('alho') || nome.includes('pimenta')) return 0.1;
+        // Padrão para a maioria dos legumes/frutas
+        return 0.5; 
+    }
+
     function render() {
         const termo = document.getElementById('busca').value.toLowerCase();
         const grid = document.getElementById('lista-produtos');
@@ -271,6 +284,8 @@
 
         grid.innerHTML = filtrados.map(p => {
             const qtd = carrinho[p.id] ? carrinho[p.id].qtd : 0;
+            const pesoStart = obterPesoInicial(p);
+
             return `<div class="card">
                 <img src="${p.img}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/1617/1617554.png'">
                 <div class="card-body">
@@ -278,7 +293,7 @@
                     <h3>${p.nome}</h3>
                     <div class="price">R$ ${p.preco.toFixed(2).replace('.',',')}</div>
                     ${qtd === 0 ? 
-                        `<button onclick="mudarQtd('${p.id}', ${p.pesavel ? 1 : 1})" style="background:var(--verde-primario); color:white; border:none; padding:12px; width:100%; border-radius:12px; font-weight:bold; cursor:pointer;">Adicionar</button>` :
+                        `<button onclick="mudarQtd('${p.id}', ${p.pesavel ? pesoStart : 1})" style="background:var(--verde-primario); color:white; border:none; padding:12px; width:100%; border-radius:12px; font-weight:bold; cursor:pointer;">Adicionar</button>` :
                         `<div class="qty-controls">
                             <button class="btn-qty" onclick="mudarQtd('${p.id}', ${p.pesavel ? -0.1 : -1})">-</button>
                             ${p.pesavel ? 
@@ -299,19 +314,23 @@
             const p = produtos.find(prod => prod.id === id);
             carrinho[id] = { ...p, qtd: 0 };
         }
+        
         carrinho[id].qtd += delta;
-        if (carrinho[id].qtd <= 0) {
+        
+        // Limite mínimo: Se baixar de 0.05kg ou 1un, remove do carrinho
+        if (carrinho[id].qtd < 0.05) {
             delete carrinho[id];
         } else {
             carrinho[id].qtd = Math.round(carrinho[id].qtd * 100) / 100;
         }
+        
         atualizarBarra();
         render();
     }
 
     function ajustarPesoDireto(id, valor) {
         let num = parseFloat(valor.replace(',', '.'));
-        if (isNaN(num) || num <= 0) {
+        if (isNaN(num) || num <= 0.05) {
             delete carrinho[id];
         } else {
             carrinho[id].qtd = Math.round(num * 100) / 100;
