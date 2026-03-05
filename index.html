@@ -55,9 +55,12 @@
         .card { background: var(--branco); border-radius: 22px; overflow: hidden; display: flex; flex-direction: column; box-shadow: var(--shadow); position: relative; }
         .card img { width: 100%; height: 160px; object-fit: cover; background: #eee; }
         .card-body { padding: 15px; flex-grow: 1; display: flex; flex-direction: column; align-items: center; }
-        .card-body h3 { font-size: 14px; margin: 5px 0; text-align: center; height: 40px; overflow: hidden; line-height: 1.3; }
+        .card-body h3 { font-size: 14px; margin: 5px 0; text-align: center; height: auto; min-height: 40px; line-height: 1.3; }
         .price { color: var(--verde-escuro); font-weight: 700; font-size: 18px; margin: 8px 0; }
         .label-peso { font-size: 10px; color: var(--laranja); font-weight: bold; text-transform: uppercase; }
+
+        /* Estilo da descrição dos itens do Kit */
+        .kit-desc { font-size: 11px; color: #666; background: #f9f9f9; padding: 8px; border-radius: 8px; margin: 5px 0; width: 100%; text-align: left; border-left: 3px solid var(--laranja); }
 
         .qty-controls { display: flex; align-items: center; justify-content: space-between; width: 100%; background: #f8f9fa; border-radius: 12px; padding: 5px; margin-top: auto; }
         .btn-qty { background: var(--verde-primario); color: white; border: none; width: 35px; height: 35px; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 18px; }
@@ -106,7 +109,7 @@
 
     <div class="categories" id="filtros">
         <button class="cat-btn active" onclick="filtrarCat('Todos', this)">🌿 Todos</button>
-        <button class="cat-btn" onclick="filtrarCat('Kits', this)">🎁 Kits Especiais</button>
+        <button class="cat-btn" onclick="filtrarCat('Kits', this)">🎁 Kits</button>
         <button class="cat-btn" onclick="filtrarCat('Ofertas', this)">🔥 Ofertas</button>
         <button class="cat-btn" onclick="filtrarCat('Frutas', this)">🍎 Frutas</button>
         <button class="cat-btn" onclick="filtrarCat('Legumes', this)">🥕 Legumes</button>
@@ -206,6 +209,15 @@
     const URL_PLANILHA_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRfG9ACYb6dSnGeHioNdZpLL11MLm0FakxrhxMbL4ctyvRp-jAKNV7qz3zInyuaEIM7TbXAiUlo3upR/pub?gid=0&single=true&output=csv";
     const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbxiGvqslkNlxV1-bRuhQ3UwOnf-e3zkb8T8kcMepF29oQv_kcziB2UAaZyb0y95hmyG/exec";
 
+    // Banco de dados local das descrições dos kits
+    const descricoesKits = {
+        "KIT CAFÉ DA MANHÃ - R$ 99,50": "Banana Pacovan, Mamão, Abacaxi cortado, Melancia, Queijo coalho, Iogurte caseiro, Pão francês, Pão de queijo, Suco natural maracujá e Suco natural.",
+        "KIT QUERIDINHOS DA CASA": "Água de coco 1L, Açaí natural 1L, Iogurte caseiro, Farinha de tapioca, Farinha ovinha e Cartela de ovo branco (30un).",
+        "KIT CAFÉ DA MANHÃ": "Açaí natural 1L, Iogurte caseiro 1L, Farinha de tapioca, Farinha ovinha, Goma de tapioca e Cartela de ovo branco (30un).",
+        "KIT VERDURAS E HORTALIÇAS": "Couve, Cheiro verde, Alface, Pimenta de cheiro, Pimenta verde, Macaxeira, Tomate, Cebola, Batata, Alho, Cenoura, Pepino, Beterraba, Banana Pacovan, Repolho roxo/verde, Abóbora e Tomate cereja.",
+        "KIT FRUTAS PARA SEMANA": "Uvas Thompson/Vitória, Laranja Bahia, Abacate, Kiwi, Ameixa, Tangerina, Maçã Fuji, Banana prata, Melancia, Mamão, Saco de laranja, Abacaxi ferrão e Pera."
+    };
+
     let produtos = [];
     let carrinho = {};
     let categoriaAtual = "Todos";
@@ -269,11 +281,20 @@
 
         grid.innerHTML = filtrados.map(p => {
             const qtd = carrinho[p.id] ? carrinho[p.id].qtd : 0;
+            
+            // Busca descrição se for Kit
+            let htmlKit = "";
+            if (p.cat === "Kits") {
+                const desc = descricoesKits[p.nome.toUpperCase()] || descricoesKits[Object.keys(descricoesKits).find(k => p.nome.toUpperCase().includes(k))];
+                if (desc) htmlKit = `<div class="kit-desc"><b>Contém:</b> ${desc}</div>`;
+            }
+
             return `<div class="card">
                 <img src="${p.img}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/1617/1617554.png'">
                 <div class="card-body">
                     <span class="label-peso">${p.pesavel ? 'Item por KG' : 'Unidade'}</span>
                     <h3>${p.nome}</h3>
+                    ${htmlKit}
                     <div class="price">R$ ${p.preco.toFixed(2).replace('.',',')}</div>
                     ${qtd === 0 ? 
                         `<button onclick="mudarQtd('${p.id}', ${p.pesavel ? 0.5 : 1})" style="background:var(--verde-primario); color:white; border:none; padding:12px; width:100%; border-radius:12px; font-weight:bold; cursor:pointer;">Adicionar</button>` :
@@ -360,7 +381,7 @@
             tipo: tipo,
             bairro: tipo === 'Entrega' ? bairro : 'N/A',
             endereco: tipo === 'Entrega' ? end : 'Retirada na Loja',
-            pag: pag,
+            pagamento: pag,
             total: total.toFixed(2)
         };
 
