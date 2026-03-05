@@ -52,18 +52,24 @@
         .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
         @media (min-width: 768px) { .grid { grid-template-columns: repeat(4, 1fr); gap: 25px; } }
 
-        .card { background: var(--branco); border-radius: 22px; overflow: hidden; display: flex; flex-direction: column; box-shadow: var(--shadow); position: relative; }
+        .card { background: var(--branco); border-radius: 22px; overflow: hidden; display: flex; flex-direction: column; box-shadow: var(--shadow); position: relative; cursor: pointer; }
         .card img { width: 100%; height: 160px; object-fit: cover; background: #eee; }
         .card-body { padding: 15px; flex-grow: 1; display: flex; flex-direction: column; align-items: center; }
         .card-body h3 { font-size: 14px; margin: 5px 0; text-align: center; height: auto; min-height: 40px; line-height: 1.3; }
         .price { color: var(--verde-escuro); font-weight: 700; font-size: 18px; margin: 8px 0; }
         .label-peso { font-size: 10px; color: var(--laranja); font-weight: bold; text-transform: uppercase; }
 
-        /* Estilo da descrição que aparece ao selecionar */
-        .kit-detalhes { font-size: 11px; color: #555; background: #fff9f0; padding: 10px; border-radius: 10px; margin: 8px 0; border: 1px dashed var(--laranja); width: 100%; }
-
         .qty-controls { display: flex; align-items: center; justify-content: space-between; width: 100%; background: #f8f9fa; border-radius: 12px; padding: 5px; margin-top: auto; }
         .btn-qty { background: var(--verde-primario); color: white; border: none; width: 35px; height: 35px; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 18px; }
+
+        /* MODAL DE DETALHES DO KIT */
+        .modal-kit { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 3000; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .modal-kit-content { background: white; width: 100%; max-width: 450px; border-radius: 30px; overflow: hidden; position: relative; animation: slideUp 0.3s ease-out; }
+        @keyframes slideUp { from { transform: translateY(100px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .modal-kit img { width: 100%; height: 250px; object-fit: cover; }
+        .modal-kit-info { padding: 25px; }
+        .lista-itens-kit { background: #f9f9f9; padding: 15px; border-radius: 15px; margin: 15px 0; font-size: 13px; line-height: 1.6; color: #555; }
+        .btn-close-kit { position: absolute; top: 15px; right: 15px; background: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
 
         .cart-bar {
             position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
@@ -122,6 +128,22 @@
     </div>
 
     <div id="lista-produtos" class="grid"></div>
+</div>
+
+<div id="modal-kit" class="modal-kit" onclick="fecharModalKit(event)">
+    <div class="modal-kit-content" onclick="event.stopPropagation()">
+        <button class="btn-close-kit" onclick="fecharModalKit(null)"><i class="fas fa-times"></i></button>
+        <img id="kit-img" src="" alt="Kit">
+        <div class="modal-kit-info">
+            <h2 id="kit-nome" style="margin:0; font-size: 22px;"></h2>
+            <div id="kit-preco" class="price" style="font-size: 24px;"></div>
+            <div class="lista-itens-kit">
+                <b style="color: var(--laranja)">O que vem no kit:</b><br>
+                <div id="kit-descricao" style="margin-top:10px"></div>
+            </div>
+            <button id="btn-add-kit" style="background:var(--verde-primario); color:white; border:none; padding:18px; width:100%; border-radius:15px; font-weight:bold; cursor:pointer; font-size: 16px;">ADICIONAR AO CARRINHO</button>
+        </div>
+    </div>
 </div>
 
 <button id="btn-topo" onclick="window.scrollTo(0,0)"><i class="fas fa-arrow-up"></i></button>
@@ -209,12 +231,13 @@
     const URL_PLANILHA_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRfG9ACYb6dSnGeHioNdZpLL11MLm0FakxrhxMbL4ctyvRp-jAKNV7qz3zInyuaEIM7TbXAiUlo3upR/pub?gid=0&single=true&output=csv";
     const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbxiGvqslkNlxV1-bRuhQ3UwOnf-e3zkb8T8kcMepF29oQv_kcziB2UAaZyb0y95hmyG/exec";
 
+    // Conteúdo detalhado dos kits
     const descricoesKits = {
-        "KIT CAFÉ DA MANHÃ": "Banana Pacovan (0,5kg), Mamão (0,3kg), Abacaxi cortado, Melancia, Queijo coalho (0,4kg), Iogurte caseiro, Pão francês (0,5kg), Pão de queijo (0,25kg), Suco de maracujá e Suco natural.",
-        "KIT QUERIDINHOS DA CASA": "Água de coco 1L, Açaí natural 1L, Iogurte caseiro, Farinha de tapioca, Farinha ovinha e Cartela de ovo branco (30un).",
-        "KIT MANAUARA": "Açaí natural 1L, Iogurte caseiro 1L, Farinha de tapioca, Farinha ovinha, Goma de tapioca e Cartela de ovo branco (30un).",
-        "KIT VERDURAS E HORTALIÇAS": "Couve, Cheiro verde, Alface, Pimenta, Macaxeira, Tomate, Cebola, Batata, Alho, Cenoura, Pepino, Beterraba, Banana Pacovan, Repolhos, Abóbora e Tomate cereja.",
-        "KIT FRUTAS PARA SEMANA": "Uvas Thompson/Vitória, Laranja Bahia, Abacate, Kiwi, Ameixa, Tangerina, Maçã Fuji, Banana prata, Melancia, Mamão, Saco de laranjas, Abacaxi ferrão e Pera."
+        "KIT CAFÉ DA MANHÃ": "• Banana Pacovan (0,5kg)<br>• Mamão (0,3kg)<br>• Abacaxi cortado (bandeja)<br>• Melancia (bandeja)<br>• Queijo coalho (0,4kg)<br>• Iogurte caseiro 500ml<br>• Pão francês (0,5kg)<br>• Pão de queijo (0,25kg)<br>• Suco natural maracujá 500ml<br>• Suco natural 500ml",
+        "KIT QUERIDINHOS DA CASA": "• Água de coco 1L<br>• Açaí natural 1L<br>• Iogurte caseiro<br>• Farinha de tapioca<br>• Farinha ovinha<br>• Cartela de ovo branco (30un)",
+        "KIT MANAUARA": "• Açaí natural 1L<br>• Iogurte caseiro 1L<br>• Farinha de tapioca<br>• Farinha ovinha<br>• Goma de tapioca<br>• Cartela de ovo branco (30un)",
+        "KIT VERDURAS E HORTALIÇAS": "• Couve (2 un)<br>• Cheiro verde (2 un)<br>• Alface crespa<br>• Pimenta de cheiro (0,2kg)<br>• Pimenta verde (0,2kg)<br>• Macaxeira (0,25kg)<br>• Tomate (0,8kg)<br>• Cebola (0,8kg)<br>• Batata portuguesa (1,5kg)<br>• Alho (0,3kg)<br>• Cenoura (0,4kg)<br>• Pepino japonês (0,4kg)<br>• Beterraba (0,25kg)<br>• Banana Pacovan (0,5kg)<br>• Repolho roxo (0,3kg)<br>• Repolho verde (0,3kg)<br>• Abóbora paulista<br>• Tomate cereja (0,35kg)",
+        "KIT FRUTAS PARA SEMANA": "• Uva verde Thompson (bandeja)<br>• Uva Vitória (bandeja)<br>• Laranja Bahia (0,5kg)<br>• Abacate (0,35kg)<br>• Kiwi (0,3kg)<br>• Ameixa fresca (0,3kg)<br>• Tangerina importada (0,5kg)<br>• Maçã Fuji (0,8kg)<br>• Banana prata (1,5kg)<br>• Melancia (quarto)<br>• Mamão (1,2kg)<br>• Saco de laranja (10 un)<br>• Abacaxi ferrão<br>• Pera (0,5kg)"
     };
 
     let produtos = [];
@@ -268,6 +291,37 @@
         } catch (e) { console.error("Erro ao carregar produtos"); }
     }
 
+    // Função para abrir o modal de detalhes do kit
+    function abrirModalKit(id) {
+        const p = produtos.find(item => item.id === id);
+        if (!p) return;
+
+        // Se NÃO for kit, adiciona direto. Se FOR kit, abre o modal.
+        if (p.cat !== "Kits") {
+            mudarQtd(id, p.pesavel ? 0.5 : 1);
+            return;
+        }
+
+        const modal = document.getElementById('modal-kit');
+        document.getElementById('kit-img').src = p.img;
+        document.getElementById('kit-nome').innerText = p.nome;
+        document.getElementById('kit-preco').innerText = `R$ ${p.preco.toFixed(2).replace('.',',')}`;
+        
+        const textoDesc = descricoesKits[p.nome.toUpperCase()] || descricoesKits[Object.keys(descricoesKits).find(k => p.nome.toUpperCase().includes(k))] || "Descrição não disponível.";
+        document.getElementById('kit-descricao').innerHTML = textoDesc;
+        
+        document.getElementById('btn-add-kit').onclick = function() {
+            mudarQtd(id, 1);
+            fecharModalKit(null);
+        };
+
+        modal.style.display = 'flex';
+    }
+
+    function fecharModalKit(e) {
+        document.getElementById('modal-kit').style.display = 'none';
+    }
+
     function render() {
         const termo = document.getElementById('busca').value.toLowerCase();
         const grid = document.getElementById('lista-produtos');
@@ -280,24 +334,15 @@
 
         grid.innerHTML = filtrados.map(p => {
             const qtd = carrinho[p.id] ? carrinho[p.id].qtd : 0;
-            
-            // LÓGICA DE DESCRIÇÃO CONDICIONAL: Só mostra se qtd > 0 e se for Kit
-            let htmlDescricao = "";
-            if (qtd > 0 && p.cat === "Kits") {
-                const textoDesc = descricoesKits[p.nome.toUpperCase()] || descricoesKits[Object.keys(descricoesKits).find(k => p.nome.toUpperCase().includes(k))];
-                if (textoDesc) htmlDescricao = `<div class="kit-detalhes"><b>Itens inclusos:</b><br>${textoDesc}</div>`;
-            }
-
-            return `<div class="card">
+            return `<div class="card" onclick="abrirModalKit('${p.id}')">
                 <img src="${p.img}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/1617/1617554.png'">
                 <div class="card-body">
                     <span class="label-peso">${p.pesavel ? 'Item por KG' : 'Unidade'}</span>
                     <h3>${p.nome}</h3>
-                    ${htmlDescricao}
                     <div class="price">R$ ${p.preco.toFixed(2).replace('.',',')}</div>
                     ${qtd === 0 ? 
-                        `<button onclick="mudarQtd('${p.id}', ${p.pesavel ? 0.5 : 1})" style="background:var(--verde-primario); color:white; border:none; padding:12px; width:100%; border-radius:12px; font-weight:bold; cursor:pointer;">Adicionar</button>` :
-                        `<div class="qty-controls">
+                        `<button style="background:var(--verde-primario); color:white; border:none; padding:12px; width:100%; border-radius:12px; font-weight:bold; cursor:pointer;">${p.cat === 'Kits' ? 'Ver Kit' : 'Adicionar'}</button>` :
+                        `<div class="qty-controls" onclick="event.stopPropagation()">
                             <button class="btn-qty" onclick="mudarQtd('${p.id}', ${p.pesavel ? -0.1 : -1})">-</button>
                             <span style="font-weight:bold">${qtd.toString().replace('.',',')}</span>
                             <button class="btn-qty" onclick="mudarQtd('${p.id}', ${p.pesavel ? 0.1 : 1})">+</button>
