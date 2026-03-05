@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -107,6 +106,7 @@
 
     <div class="categories" id="filtros">
         <button class="cat-btn active" onclick="filtrarCat('Todos', this)">🌿 Todos</button>
+        <button class="cat-btn" onclick="filtrarCat('Kits', this)">🎁 Kits Especiais</button>
         <button class="cat-btn" onclick="filtrarCat('Ofertas', this)">🔥 Ofertas</button>
         <button class="cat-btn" onclick="filtrarCat('Frutas', this)">🍎 Frutas</button>
         <button class="cat-btn" onclick="filtrarCat('Legumes', this)">🥕 Legumes</button>
@@ -360,7 +360,7 @@
             tipo: tipo,
             bairro: tipo === 'Entrega' ? bairro : 'N/A',
             endereco: tipo === 'Entrega' ? end : 'Retirada na Loja',
-            pagamento: pag,
+            pag: pag,
             total: total.toFixed(2)
         };
 
@@ -385,6 +385,3 @@
 </script>
 </body>
 </html>
-
-```
-
