@@ -17,7 +17,7 @@
         !function (f, b, e, v, n, t, s) {
             if (f.fbq) return; n = f.fbq = function () {
                 n.callMethod ?
-                n.callMethod.apply(n, arguments) : n.queue.push(arguments)
+                    n.callMethod.apply(n, arguments) : n.queue.push(arguments)
             };
             if (!f._fbq) f._fbq = n; n.push = n; n.loaded = !0; n.version = '2.0';
             n.queue = []; t = b.createElement(e); t.async = !0;
@@ -613,8 +613,30 @@
             const p = produtos.find(item => item.id === id);
             if (!p) return;
 
+            // Tenta buscar a descrição caso seja kit, para usar no item_category depois
+            const isKit = p.cat === "Kits";
+
+            // Push 'view_item' para o Data Layer (GA4 Standard)
+            window.dataLayer = window.dataLayer || [];
+            window.dataLayer.push({
+                event: "view_item",
+                ecommerce: {
+                    currency: "BRL",
+                    value: p.preco,
+                    items: [
+                        {
+                            item_id: p.id || "SEM_ID",
+                            item_name: p.nome,
+                            price: p.preco,
+                            quantity: 1,
+                            item_category: p.cat || ""
+                        }
+                    ]
+                }
+            });
+
             // Se NÃO for kit, adiciona direto. Se FOR kit, abre o modal.
-            if (p.cat !== "Kits") {
+            if (!isKit) {
                 mudarQtd(id, p.pesavel ? 0.5 : 1);
                 return;
             }
@@ -674,6 +696,29 @@
                 const p = produtos.find(prod => prod.id === id);
                 carrinho[id] = { ...p, qtd: 0 };
             }
+
+            // Push 'add_to_cart' para o Data Layer apenas se a quantidade estiver aumentando
+            if (delta > 0) {
+                const p = carrinho[id];
+                window.dataLayer = window.dataLayer || [];
+                window.dataLayer.push({
+                    event: "add_to_cart",
+                    ecommerce: {
+                        currency: "BRL",
+                        value: p.preco * delta,
+                        items: [
+                            {
+                                item_id: p.id || "SEM_ID",
+                                item_name: p.nome,
+                                price: p.preco,
+                                quantity: delta, // Envia a quantidade recém adicionada, não o total no carrinho
+                                item_category: p.cat || ""
+                            }
+                        ]
+                    }
+                });
+            }
+
             carrinho[id].qtd += delta;
             if (carrinho[id].qtd < 0.05) delete carrinho[id];
             else carrinho[id].qtd = Math.round(carrinho[id].qtd * 100) / 100;
