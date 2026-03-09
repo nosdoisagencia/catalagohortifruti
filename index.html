@@ -756,6 +756,23 @@
                 document.getElementById('aviso-pesagem').style.display = temPesavel ? 'flex' : 'none';
                 const total = Object.values(carrinho).reduce((acc, p) => acc + (p.preco * p.qtd), 0);
                 document.getElementById('resumo-financeiro').innerHTML = `<b style="font-size:20px; color:var(--verde-escuro);">Total: R$ ${total.toFixed(2).replace('.', ',')}</b>`;
+
+                // Push 'begin_checkout' para o Data Layer (GA4 Standard)
+                window.dataLayer = window.dataLayer || [];
+                window.dataLayer.push({
+                    event: "begin_checkout",
+                    ecommerce: {
+                        currency: "BRL",
+                        value: total,
+                        items: Object.values(carrinho).map(p => ({
+                            item_id: p.id || "SEM_ID",
+                            item_name: p.nome,
+                            price: p.preco,
+                            quantity: Math.round(p.qtd * 100) / 100,
+                            item_category: p.cat || ""
+                        }))
+                    }
+                });
             }
         }
 
@@ -803,6 +820,24 @@
                 msg += `• ${p.nome}: ${p.qtd.toString().replace('.', ',')}${p.pesavel ? 'kg' : ' un'}\n`;
             });
             msg += `\n💰 *VALOR TOTAL: R$ ${total.toFixed(2).replace('.', ',')}*`;
+
+            // Push 'purchase' para o Data Layer (GA4 Standard)
+            window.dataLayer = window.dataLayer || [];
+            window.dataLayer.push({
+                event: "purchase",
+                ecommerce: {
+                    transaction_id: numeroPedidoAtual, // Usando o número do pedido gerado
+                    value: total,
+                    currency: "BRL",
+                    items: Object.values(carrinho).map(p => ({
+                        item_id: p.id || "SEM_ID",
+                        item_name: p.nome,
+                        price: p.preco,
+                        quantity: Math.round(p.qtd * 100) / 100,
+                        item_category: p.cat || ""
+                    }))
+                }
+            });
 
             window.open(`https://wa.me/5592933009360?text=${encodeURIComponent(msg)}`);
         }
