@@ -661,34 +661,57 @@
             document.getElementById('modal-kit').style.display = 'none';
         }
 
+        function renderCard(p) {
+            const qtd = carrinho[p.id] ? carrinho[p.id].qtd : 0;
+            return `<div class="card" onclick="abrirModalKit('${p.id}')">
+            <img src="${p.img}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/1617/1617554.png'">
+            <div class="card-body">
+                <span class="label-peso">${p.pesavel ? 'Item por KG' : 'Unidade'}</span>
+                <h3>${p.nome}</h3>
+                <div class="price">R$ ${p.preco.toFixed(2).replace('.', ',')}</div>
+                ${qtd === 0 ?
+                    `<button style="background:var(--verde-primario); color:white; border:none; padding:12px; width:100%; border-radius:12px; font-weight:bold; cursor:pointer;">${p.cat === 'Kits' ? 'Ver Kit' : 'Adicionar'}</button>` :
+                    `<div class="qty-controls" onclick="event.stopPropagation()">
+                        <button class="btn-qty" onclick="mudarQtd('${p.id}', ${p.pesavel ? -0.1 : -1})">-</button>
+                        <span style="font-weight:bold">${qtd.toString().replace('.', ',')}</span>
+                        <button class="btn-qty" onclick="mudarQtd('${p.id}', ${p.pesavel ? 0.1 : 1})">+</button>
+                    </div>`}
+            </div>
+        </div>`;
+        }
+
         function render() {
             const termo = document.getElementById('busca').value.toLowerCase();
             const grid = document.getElementById('lista-produtos');
-            const filtrados = produtos.filter(p => {
-                const matchesSearch = p.nome.toLowerCase().includes(termo);
-                if (categoriaAtual === "Todos") return matchesSearch;
-                if (categoriaAtual === "Ofertas") return matchesSearch && p.oferta;
-                return matchesSearch && p.cat === categoriaAtual;
-            });
+            let html = "";
 
-            grid.innerHTML = filtrados.map(p => {
-                const qtd = carrinho[p.id] ? carrinho[p.id].qtd : 0;
-                return `<div class="card" onclick="abrirModalKit('${p.id}')">
-                <img src="${p.img}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/1617/1617554.png'">
-                <div class="card-body">
-                    <span class="label-peso">${p.pesavel ? 'Item por KG' : 'Unidade'}</span>
-                    <h3>${p.nome}</h3>
-                    <div class="price">R$ ${p.preco.toFixed(2).replace('.', ',')}</div>
-                    ${qtd === 0 ?
-                        `<button style="background:var(--verde-primario); color:white; border:none; padding:12px; width:100%; border-radius:12px; font-weight:bold; cursor:pointer;">${p.cat === 'Kits' ? 'Ver Kit' : 'Adicionar'}</button>` :
-                        `<div class="qty-controls" onclick="event.stopPropagation()">
-                            <button class="btn-qty" onclick="mudarQtd('${p.id}', ${p.pesavel ? -0.1 : -1})">-</button>
-                            <span style="font-weight:bold">${qtd.toString().replace('.', ',')}</span>
-                            <button class="btn-qty" onclick="mudarQtd('${p.id}', ${p.pesavel ? 0.1 : 1})">+</button>
-                        </div>`}
-                </div>
-            </div>`;
-            }).join('');
+            if (categoriaAtual === "Todos" && termo === "") {
+                const kits = produtos.filter(p => p.cat === "Kits");
+                const outros = produtos.filter(p => p.cat !== "Kits");
+
+                if (kits.length > 0) {
+                    html += `<div style="grid-column: 1 / -1; margin-top: 10px; margin-bottom: 5px; text-align: center;">
+                                <h2 style="margin: 0; color: var(--laranja); font-size: 24px;">✨ Novidades</h2>
+                                <p style="margin: 5px 0 15px 0; color: #666; font-size: 14px;">Aproveite nossos kits especiais recém-lançados!</p>
+                             </div>`;
+                    html += kits.map(p => renderCard(p)).join('');
+                    html += `<div style="grid-column: 1 / -1; margin-top: 30px; margin-bottom: 10px; text-align: center;">
+                                <hr style="border: none; border-top: 1px solid #ddd; margin-bottom: 20px;">
+                                <h2 style="margin: 0; color: var(--verde-escuro); font-size: 22px;">🛒 Todos os Produtos</h2>
+                             </div>`;
+                }
+                html += outros.map(p => renderCard(p)).join('');
+            } else {
+                const filtrados = produtos.filter(p => {
+                    const matchesSearch = p.nome.toLowerCase().includes(termo);
+                    if (categoriaAtual === "Todos") return matchesSearch;
+                    if (categoriaAtual === "Ofertas") return matchesSearch && p.oferta;
+                    return matchesSearch && p.cat === categoriaAtual;
+                });
+                html = filtrados.map(p => renderCard(p)).join('');
+            }
+
+            grid.innerHTML = html;
         }
 
         function mudarQtd(id, delta) {
